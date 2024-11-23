@@ -4,3 +4,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        font-family: 'Poppins';
+		line-height: 1.5;
+    }
+    a {
+		@apply text-[#F2E8D8] ;
+    }
+
+    thead {
+		@apply text-[#F2E8D8];
+        @apply bg-[#F2E8D8]
+	}
+}
