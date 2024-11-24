@@ -31,7 +31,7 @@ export function Landingpage() {
             </p>
           </div>
           <div className="bg-[#F2E8D8]">
-            <img src="/assets/whatwedo.png" alt="What we do" className="rounded-lg shadow-lg" />
+            <img src="/assets/whatwedo.png" alt="What we do" />
           </div>
         </div>
       </section>
