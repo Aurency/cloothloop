@@ -1,4 +1,4 @@
-import { Landingpage } from "./pages/landingpage";
+import { Landingpage } from "./landingpages/page";
 import { Footer } from "@/components/Footer";
 
 export default function Home() {
