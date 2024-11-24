@@ -1,11 +1,9 @@
-import { Navbar } from "@/components/Navbar";
-import { Landingpage } from "./pages/Landingpage";
+import { Landingpage } from "./pages/landingpage";
 import { Footer } from "@/components/Footer";
 
 export default function Home() {
   return (
     <div>
-      <Navbar/>
       <Landingpage/>
       <Footer/>
     </div>
