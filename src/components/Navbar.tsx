@@ -7,7 +7,7 @@ const navLinks = [
     { name: "Partner with us", href: "/partner" },
     { name: "Chat us", href: "/chat" },
     { name: "Help", href: "/help" },
-    { name: "Login", href: "/signin" }
+    { name: "Login", href: "/auth/signin" }
 ];
 
 export function Navbar() {
