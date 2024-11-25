@@ -146,9 +146,8 @@ export default function SignUpIndustri() {
             <option value="" disabled>
               Pilih kebutuhan limbah
             </option>
-            <option value="small">Kebutuhan kecil</option>
-            <option value="medium">Kebutuhan sedang</option>
-            <option value="large">Kebutuhan besar</option>
+            <option value="pra">Pra Konsumsi</option>
+            <option value="pasca">Pasca Konsumsi</option>
           </select>
         </div>
 
