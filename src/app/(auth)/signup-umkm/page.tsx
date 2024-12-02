@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebaseconfig"; // Path alias untuk Firebase config
+import { auth } from "@/lib/firebaseconfig"; // Pastikan path ini benar
 import Link from "next/link";
 
 export default function SignUpUMKM() {

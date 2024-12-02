@@ -1,5 +1,5 @@
 import Link from 'next/link';
-{/* BELUM BISA*/}
+
 export default  function Partner() {
   return (
     <div className="flex justify-center items-center bg-[#F2E8D8] h-[88vh]">
@@ -11,7 +11,7 @@ export default  function Partner() {
             ClothLoop adalah platform untuk membantu UMKM dalam mengelola limbah tekstil.
             Bergabunglah untuk mendapatkan manfaat dari kolaborasi ini!
           </p>
-          <Link href="/auth/signup-umkm" className="px-6 py-2 mt-4 text-lg font-medium text-[#0A4635] bg-[#FFEA7F] hover:bg-[#fcde49] rounded-[24px]">
+          <Link href="/(auth)/signup-umkm" className="px-6 py-2 mt-4 text-lg font-medium text-[#0A4635] bg-[#FFEA7F] hover:bg-[#fcde49] rounded-[24px]">
             Gabung
           </Link>
         </div>
@@ -23,7 +23,7 @@ export default  function Partner() {
             ClothLoop juga melayani industri yang ingin mengelola limbah tekstil dalam
             skala besar. Bergabunglah untuk berpartisipasi dalam solusi ramah lingkungan.
           </p>
-          <Link href="/auth/signup-industri" className="px-6 py-2 mt-4 text-lg font-medium text-[#0A4635] bg-[#FFEA7F] hover:bg-[#fcde49] rounded-[24px]"> 
+          <Link href="/(auth)/signup-industri" className="px-6 py-2 mt-4 text-lg font-medium text-[#0A4635] bg-[#FFEA7F] hover:bg-[#fcde49] rounded-[24px]"> 
             Gabung
           </Link>
         </div>

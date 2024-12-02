@@ -1,20 +1,18 @@
-import { Hero } from "@/components/Hero";
+import { Hero } from "../../../components/landing-com/Hero"
 import Link from "next/link";
 
 export function Landingpage() {
   return (
     <div className="flex flex-col min-h-screen">
-      
-
+      {/* Hero Section */}
       <div>
-        {/* Hero Section */}
         <Hero />
       </div>
 
-      {/* Who we are */}
+      {/* WHO we are */}
       <section className="py-20 bg-[#F2E8D8]">
         <div className="container mx-auto px-6 md:px-12 text-center">
-          <h2 className="text-4xl font-semibold mb-4 text-green-900">Who we are</h2>
+          <h2 className="text-4xl font-semibold mb-4 text-green-900">WHO we are</h2>
           <p className="text-gray-600">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum rem quisquam velit praesentium magni doloribus adipisci voluptatibus, error obcaecati quis reiciendis assumenda, modi animi necessitatibus vel nobis sunt fugiat deleniti?. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quisquam est voluptate porro, voluptatibus praesentium illum accusamus adipisci minima blanditiis at impedit, dignissimos autem itaque. Totam tempora quia vero voluptatem libero?
           </p>
@@ -52,7 +50,7 @@ export function Landingpage() {
           <h2 className="text-4xl font-semibold text-green-900 mb-2 py-10 bg-[#F2E8D8]/50">Kategori limbah textile</h2>
         </div>
 
-        <div className=" bg-[#F2E8D8] container mx-auto mb-8 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div className="bg-[#F2E8D8] container mx-auto mb-8 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div className="bg-[#F2E8D8] w-[487px] h-auto mx-auto mb-4">
             <img src="/assets/Pra-konsumsi.png" alt="What we do" className="shadow-lg mx-50" />
           </div>
@@ -64,8 +62,8 @@ export function Landingpage() {
           </div>
         </div>
 
-        <div className="bg-[#F2E8D8] container mx-auto  md:px-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div className="bg-[#F2E8D8]  w-[487px] h-auto mx-auto mb-4">
+        <div className="bg-[#F2E8D8] container mx-auto md:px-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="bg-[#F2E8D8] w-[487px] h-auto mx-auto mb-4">
             <img src="/assets/pasca-konsumsi.png" alt="What we do" className="shadow-lg mx-50" />
           </div>
           <div>
@@ -86,27 +84,23 @@ export function Landingpage() {
         <div className="justify-between">
           <div className="flex gap-8 justify-center">
             <Link href="/Login">
-              <div className="text-center w-[329px] 8-[388px]">
+              <div className="text-center w-[329px] w-[388px]">
                 <img src="/assets/partner1.png" alt="UMKM" className="shadow-md" />
-                <h3 className="text-xl font-medium bg-[#0A4635] text-[#F2E8D8] py-5 rounded-b-[24px]">
-                  In bua
-                </h3>
+                <h3 className="text-xl font-semibold text-[#0A4635] mt-4">UMKM</h3>
+                <p className="text-[#0A4635]">Program untuk membantu dan memberikan dampak bagi UMKM yang ingin mendaur ulang tekstil mereka</p>
               </div>
             </Link>
 
             <Link href="/Login">
-              <div className="text-center w-[329px] 8-[388px]">
-                <img src="/assets/partner2.png" alt="UMKM" className="shadow-md" />
-                <h3 className="text-xl font-medium bg-[#0A4635] text-[#F2E8D8] py-5 rounded-b-[24px]">
-                  In buat UMKM
-                </h3>
+              <div className="text-center w-[329px] w-[388px]">
+                <img src="/assets/partner2.png" alt="CSR" className="shadow-md" />
+                <h3 className="text-xl font-semibold text-[#0A4635] mt-4">CSR</h3>
+                <p className="text-[#0A4635]">Mendukung program CSR dari perusahaan untuk keberlanjutan sosial dan lingkungan yang lebih baik</p>
               </div>
             </Link>
           </div>
         </div>
       </section>
-
-    
     </div>
   );
 }

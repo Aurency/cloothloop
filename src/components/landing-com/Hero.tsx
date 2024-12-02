@@ -1,3 +1,5 @@
+// src/app/landing/components/Hero.tsx
+
 import Link from "next/link";
 
 export const Hero: React.FC = () => {
