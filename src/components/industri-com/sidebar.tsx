@@ -5,8 +5,7 @@ import Link from "next/link";
 
 const navLinks = [
   { name: "Home", href: "industri/home-industri" },
-  { name: "Chat", href: "industri/chat" },
-  { name: "History", href: "industri/history" },
+  { name: "Delivery", href: "industri/delivery" },
   { name: "Profile", href: "industri/profile" }
 ];
 
@@ -14,18 +13,18 @@ export function Sidebar2() {
   return (
     <div className="w-64 h-screen bg-[#F1F1F1] p-6 fixed top-0 left-0">
       {/* Logo Section */}
-      <div className="flex items-center mb-12">
-        <Image
-          src="/assets/cloohloop_logo.png" // Path to your logo
-          alt="ClothLoop Logo"
-          width={40} // Logo width
-          height={40} // Logo height
-        />
-        <h2 className="text-2xl font-semibold text-[#2E7D32] ml-3">ClothLoop</h2>
-      </div>
+       <div className ="marginBottom-20">
+                {/* Path ke gambar di folder public */}
+                <Image 
+                    src="/assets/logo-hijau.png" // Path yang benar
+                    alt="Cloohloop Logo"
+                    width={150} // Tentukan lebar gambar
+                    height={50} // Tentukan tinggi gambar
+                />
+            </div>
 
       {/* Menu Section */}
-      <ul className="space-y-4">
+      <ul className="space-y-4 mt-10">
         {navLinks.map((item, index) => (
           <li key={index}>
             <Link href={item.href} className="flex items-center text-lg text-[#2E7D32] hover:bg-[#E8F5E9] p-2 rounded-md">
