@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebaseconfig"; // Pastikan path ini benar
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useRouter } from "next/navigation"; // Next.js router
+import { auth, db } from "@/lib/firebaseconfig"; // Ensure Firebase is properly configured
+import { doc, setDoc } from "firebase/firestore"; // Firestore setup
 import Link from "next/link";
 
 export default function SignUpUMKM() {
@@ -18,54 +20,101 @@ export default function SignUpUMKM() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const saveUserDataToFirestore = async (uid: string, data: any) => {
+    const userRef = doc(db, "umkm", uid);
+    await setDoc(userRef, data);
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      const user = userCredential.user;
+
+      // Save user data to Firestore
+      await saveUserDataToFirestore(user.uid, {
+        ...formData,
+        uid: user.uid,
+        role: "umkm", // Assign the UMKM role
+        createdAt: new Date().toISOString(),
+      });
+
       setSuccess(true);
       setError("");
+
+      // Redirect to UMKM dashboard
+      router.push("/umkm"); // Replace with the actual UMKM dashboard URL
     } catch (err) {
-      setError("Failed to register. Please check your details.");
+      setError("Registration failed. Please check your details.");
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Save user data to Firestore
+      await saveUserDataToFirestore(user.uid, {
+        ownerName: user.displayName || "Google User",
+        businessName: "Your Business Name",
+        email: user.email || "",
+        phoneNumber: user.phoneNumber || "",
+        businessAddress: "Address not provided",
+        wasteNeeds: "Not specified",
+        uid: user.uid,
+        role: "umkm", // Assign the UMKM role
+        createdAt: new Date().toISOString(),
+      });
+
+      // Redirect to UMKM dashboard
+      router.push("/umkm"); // Replace with the actual UMKM dashboard URL
+    } catch (err) {
+      setError("Failed to sign up with Google. Please try again.");
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#F2E8D8]">
-      <h1 className="text-3xl font-bold text-[#0A4635] mb-6">UMKM</h1>
+      <h1 className="text-4xl font-bold text-[#0A4635] mb-8">UMKM Registration</h1>
       <form
         onSubmit={handleSignUp}
-        className="bg-white p-6 rounded shadow-md max-w-md w-full"
+        className="bg-white p-8 rounded shadow-md max-w-lg w-full"
       >
-        {/* Nama Pemilik */}
+        {/* Owner Name */}
         <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">
-            Nama pemilik usaha
-          </label>
+          <label className="block text-gray-700 font-medium mb-2">Owner Name</label>
           <input
             type="text"
             name="ownerName"
             value={formData.ownerName}
             onChange={handleChange}
-            placeholder="Ketik disini"
+            placeholder="Enter your name"
             required
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#0A4635]"
           />
         </div>
 
-        {/* Nama Usaha */}
+        {/* Business Name */}
         <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">Nama usaha</label>
+          <label className="block text-gray-700 font-medium mb-2">Business Name</label>
           <input
             type="text"
             name="businessName"
             value={formData.businessName}
             onChange={handleChange}
-            placeholder="Ketik disini"
+            placeholder="Enter your business name"
             required
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#0A4635]"
           />
@@ -79,39 +128,35 @@ export default function SignUpUMKM() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            placeholder="Ketik disini"
+            placeholder="Enter your email"
             required
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#0A4635]"
           />
         </div>
 
-        {/* Nomor Telepon */}
+        {/* Phone Number */}
         <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">
-            Nomor telepon
-          </label>
+          <label className="block text-gray-700 font-medium mb-2">Phone Number</label>
           <input
             type="text"
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleChange}
-            placeholder="Ketik disini"
+            placeholder="Enter your phone number"
             required
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#0A4635]"
           />
         </div>
 
-        {/* Alamat Usaha */}
+        {/* Business Address */}
         <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">
-            Alamat usaha
-          </label>
+          <label className="block text-gray-700 font-medium mb-2">Business Address</label>
           <input
             type="text"
             name="businessAddress"
             value={formData.businessAddress}
             onChange={handleChange}
-            placeholder="Ketik disini"
+            placeholder="Enter your business address"
             required
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#0A4635]"
           />
@@ -125,17 +170,15 @@ export default function SignUpUMKM() {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            placeholder="Ketik disini"
+            placeholder="Enter a password"
             required
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#0A4635]"
           />
         </div>
 
-        {/* Kebutuhan Limbah */}
+        {/* Waste Needs */}
         <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">
-            Kebutuhan limbah
-          </label>
+          <label className="block text-gray-700 font-medium mb-2">Waste Needs</label>
           <select
             name="wasteNeeds"
             value={formData.wasteNeeds}
@@ -143,35 +186,45 @@ export default function SignUpUMKM() {
             required
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#0A4635]"
           >
-            <option value="" disabled>
-              Pilih kebutuhan limbah
-            </option>
-            <option value="Pra">Pra Konsumsi</option>
-            <option value="Pasca">Pasca Konsumsi</option>
+            <option value="" disabled>Select waste needs</option>
+            <option value="pre-consumption">Pre-Consumption</option>
+            <option value="post-consumption">Post-Consumption</option>
           </select>
         </div>
 
         {/* Error Message */}
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-        {success && <p className="text-green-500 text-sm mb-4">Registration successful!</p>}
+        {success && (
+          <p className="text-green-500 text-sm mb-4">
+            Registration successful! Welcome aboard.
+          </p>
+        )}
 
-        {/* Button */}
+        {/* Sign Up Button */}
         <button
           type="submit"
           className="w-full bg-[#0A4635] text-white py-2 rounded-md hover:bg-[#086532] transition"
         >
-          Daftar
+          Sign Up
+        </button>
+
+        {/* Google Sign-Up Button */}
+        <button
+          onClick={handleGoogleSignUp}
+          className="mt-4 w-full bg-[#4285F4] text-white py-2 rounded-md hover:bg-[#357ae8] transition"
+        >
+          Sign Up with Google
         </button>
       </form>
 
-      {/* Link ke SignIn */}
-      <div className="mt-4">
-        <p>Sudah punya akun?</p>
+      {/* Link to Sign In */}
+      <div className="mt-6">
+        <p>Already have an account?</p>
         <Link
-          href="/signin"
+          href="/auth/signin"
           className="text-blue-500 underline hover:text-blue-700"
         >
-          Masuk disini
+          Log in here
         </Link>
       </div>
     </div>

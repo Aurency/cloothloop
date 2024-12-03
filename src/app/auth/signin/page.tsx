@@ -1,46 +1,70 @@
 "use client";
 
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore"; // Untuk membaca data dari Firestore
-import { auth, db } from "@/lib/firebaseconfig"; // Menggunakan alias path
+import { auth, db } from "@/lib/firebaseconfig"; // Firebase konfigurasi
 import Link from "next/link"; // Untuk navigasi
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [redirectUrl, setRedirectUrl] = useState(""); // URL tujuan untuk redirect
+  const router = useRouter();
+  const provider = new GoogleAuthProvider();
 
+  // Fungsi untuk mendapatkan role dari koleksi Firestore berdasarkan UID
+  const getRoleAndRedirect = async (uid: string) => {
+    try {
+      // Cek data pengguna di koleksi "umkm"
+      const umkmDoc = await getDoc(doc(db, "umkm", uid));
+      if (umkmDoc.exists()) {
+        router.push("/umkm"); // Redirect ke halaman UMKM
+        return;
+      }
+
+      // Cek data pengguna di koleksi "industri"
+      const industriDoc = await getDoc(doc(db, "industri", uid));
+      if (industriDoc.exists()) {
+        router.push("/industri"); // Redirect ke halaman Industri
+        return;
+      }
+
+      // Jika data tidak ditemukan di kedua koleksi
+      setError("Role tidak ditemukan. Hubungi admin.");
+    } catch (err) {
+      console.error("Error saat membaca data pengguna:", err);
+      setError("Terjadi kesalahan saat memuat data pengguna.");
+    }
+  };
+
+  // Fungsi untuk Sign In menggunakan email dan password
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(""); // Reset error sebelumnya
     try {
-      // Sign in pengguna
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const userId = userCredential.user.uid; // Mendapatkan UID pengguna
-
-      // Ambil data pengguna dari Firestore berdasarkan UID
-      const userDoc = await getDoc(doc(db, "users", userId));
-
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        console.log("User Data: ", userData); // Log untuk memeriksa data pengguna
-        const role = userData?.role; // Ambil role pengguna dari Firestore dan pastikan ada
-
-        // Tentukan URL berdasarkan role
-        if (role === "UMKM") {
-          setRedirectUrl("/dashboard-umkm"); // Arahkan ke dashboard UMKM
-        } else if (role === "industri") {
-          setRedirectUrl("/dashboard-industri"); // Arahkan ke dashboard Industri
-        } else {
-          setError("Role tidak valid atau tidak ditemukan. Hubungi admin.");
-        }
-      } else {
-        setError("Data pengguna tidak ditemukan.");
-      }
+      const userId = userCredential.user.uid;
+      await getRoleAndRedirect(userId);
     } catch (err) {
       console.error("Error saat login:", err);
       setError("Gagal masuk. Periksa email dan password Anda.");
+    }
+  };
+
+  // Fungsi untuk Sign In menggunakan Google
+  const handleGoogleSignIn = async () => {
+    setError(""); // Reset error sebelumnya
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Periksa role dan redirect
+      await getRoleAndRedirect(user.uid);
+    } catch (err) {
+      console.error("Error saat login dengan Google:", err);
+      setError("Gagal masuk dengan Google. Coba lagi.");
     }
   };
 
@@ -84,20 +108,15 @@ export default function SignIn() {
         >
           Sign In
         </button>
-      </form>
 
-      {/* Redirect Message */}
-      {redirectUrl && (
-        <div className="mt-4">
-          <p className="text-green-500 text-sm">Sign-in successful!</p>
-          <Link
-            href={redirectUrl}
-            className="text-blue-500 underline hover:text-blue-700"
-          >
-            Go to your dashboard
-          </Link>
-        </div>
-      )}
+        {/* Google Sign-In Button */}
+        <button
+          onClick={handleGoogleSignIn}
+          className="mt-4 w-full bg-[#4285F4] text-white py-2 rounded-md hover:bg-[#357ae8] transition"
+        >
+          Sign In with Google
+        </button>
+      </form>
 
       {/* Link ke Sign Up */}
       <div className="mt-4">
