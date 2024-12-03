@@ -2,6 +2,7 @@
 
 import { Sidebar2 } from "@/components/industri-com/sidebar";
 import { Header2 } from "@/components/industri-com/header";
+import Chatbot from "@/components/Chatbot/chatbot";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -16,6 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Content from the page */}
         <div className="p-6">
+          <Chatbot/>
           {children}
         </div>
       </div>

@@ -4,7 +4,6 @@ import Link from "next/link";  // Mengimpor Link dari Next.js
 const navLinks = [
     { name: "Home", href: "/" },
     { name: "Partner with us", href: "/partner" },
-    { name: "Chat us", href: "/chat" },
     { name: "Login", href: "/(auth)/signin" }
 ];
 
