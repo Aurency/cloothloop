@@ -76,26 +76,26 @@ export function Landingpage() {
       </section>
 
       {/* Partner with us */}
-      <section className="bg-[#F2E8D8] pb-5">
+      <section className="bg-[#F2E8D8] pb-10">
         <div className="text-center">
           <h2 className="text-4xl font-semibold text-green-900 py-10 bg-[#F2E8D8]/50">Partner with us</h2>
         </div>
 
-        <div className="justify-between">
+        <div className="justify-between ">
           <div className="flex gap-8 justify-center">
             <Link href="/Login">
-              <div className="text-center w-[329px] w-[388px]">
+              <div className="text-center w-[329px] bg-[#0A4635] rounded-[24px]">
                 <img src="/assets/partner1.png" alt="UMKM" className="shadow-md" />
-                <h3 className="text-xl font-semibold text-[#0A4635] mt-4">UMKM</h3>
-                <p className="text-[#0A4635]">Program untuk membantu dan memberikan dampak bagi UMKM yang ingin mendaur ulang tekstil mereka</p>
+                <h3 className="text-xl font-semibold text-[#F2E8D8] mt-4">UMKM</h3>
+                <p className="text-[#F2E8D8] pb-5 mt-1 mx-4">Program untuk membantu dan memberikan dampak bagi UMKM yang ingin mendaur ulang tekstil mereka</p>
               </div>
             </Link>
 
             <Link href="/Login">
-              <div className="text-center w-[329px] w-[388px]">
+              <div className="text-center w-[329px] bg-[#0A4635] rounded-[24px]">
                 <img src="/assets/partner2.png" alt="CSR" className="shadow-md" />
-                <h3 className="text-xl font-semibold text-[#0A4635] mt-4">CSR</h3>
-                <p className="text-[#0A4635]">Mendukung program CSR dari perusahaan untuk keberlanjutan sosial dan lingkungan yang lebih baik</p>
+                <h3 className="text-xl font-semibold text-[#F2E8D8] mt-4">CSR</h3>
+                <p className="text-[#F2E8D8] pb-5 mt-1 mx-4">Mendukung program CSR dari perusahaan untuk keberlanjutan sosial dan lingkungan yang lebih baik</p>
               </div>
             </Link>
           </div>
