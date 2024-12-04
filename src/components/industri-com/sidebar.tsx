@@ -6,7 +6,7 @@ import Link from "next/link";
 const navLinks = [
   { name: "Home", href: "/industri" },
   { name: "Activity", href: "/industri/delivery" },
-  { name: "Profile", href: "/industri/profile" }
+  { name: "Profile", href: "/industri/profil" }
 ];
 
 export function Sidebar2() {
