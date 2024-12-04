@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebaseconfig"; // Konfigurasi Firebase
-import { useRouter } from "next/navigation"; // Router Next.js
-import { deleteUser } from "firebase/auth"; // Untuk menghapus akun pengguna dari Firebase Auth
+import { auth, db } from "@/lib/firebaseconfig"; // Firebase configuration
+import { useRouter } from "next/navigation"; // Next.js router
+import { deleteUser } from "firebase/auth"; // To delete user account from Firebase Auth
 
 export default function ProfilePage() {
   const [formData, setFormData] = useState({
@@ -18,18 +18,18 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false); // Untuk menangani proses penghapusan
+  const [isDeleting, setIsDeleting] = useState(false); // To handle the deletion process
   const router = useRouter();
 
-  // Ambil UID pengguna yang sedang login
+  // Get the current logged-in user's UID
   const user = auth.currentUser;
 
   useEffect(() => {
     if (!user) {
-      router.push("/auth/signin"); // Jika tidak login, arahkan ke halaman Sign In
+      router.push("/auth/signin"); // If not logged in, redirect to Sign In page
       return;
     }
-    // Ambil data dari Firestore
+    // Fetch user data from Firestore
     const fetchUserData = async () => {
       try {
         const userRef = doc(db, "umkm", user.uid);
@@ -66,23 +66,23 @@ export default function ProfilePage() {
     }
   };
 
-  // Fungsi untuk menghapus data pengguna dari Firestore dan akun dari Firebase Auth
+  // Function to delete user data from Firestore and account from Firebase Auth
   const handleDeleteAccount = async () => {
     try {
-      // Konfirmasi sebelum menghapus akun
+      // Confirm before deleting account
       const confirmDelete = window.confirm(
-        "Apakah Anda yakin ingin menghapus akun ini? Semua data akan hilang dan tidak bisa dipulihkan!"
+        "Are you sure you want to delete this account? All data will be lost and cannot be recovered!"
       );
       if (!confirmDelete) return;
 
-      // Hapus data pengguna dari Firestore
+      // Delete user data from Firestore
       const userRef = doc(db, "umkm", user?.uid || "");
       await deleteDoc(userRef);
 
-      // Hapus akun pengguna dari Firebase Auth
+      // Delete user account from Firebase Auth
       if (user) {
         await deleteUser(user);
-        router.push("/auth/signin"); // Arahkan kembali ke halaman Sign In setelah hapus akun
+        router.push("/auth/signin"); // Redirect to Sign In page after account deletion
       }
     } catch (err) {
       console.error("Error deleting account:", err);
@@ -92,40 +92,44 @@ export default function ProfilePage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white relative">
-      {/* Judul My Profile di luar card */}
+      {/* Profile title outside of card */}
       <h1 className="text-3xl font-bold mb-2 text-[#0A4635] text-left absolute top-10 left-10">
         My Profile
       </h1>
 
       <div className="bg-white p-10 rounded-lg shadow-lg max-w-5xl w-full mt-16">
-        <h2 className="text-2xl font-bold text-[#0A4635] mb-6">Detail Profil</h2>
+        <h2 className="text-2xl font-bold text-[#0A4635] mb-6">Profile Details</h2>
 
-        {/* Tampilkan data pengguna */}
+        {/* Display user data */}
         {!isEditing ? (
           <div className="space-y-4">
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Nama:</span>
+              <span className="font-medium text-lg">Owner Name:</span>
               <span className="text-lg">{formData.ownerName}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-medium text-lg">Business Name:</span>
+              <span className="text-lg">{formData.businessName}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-medium text-lg">Email:</span>
               <span className="text-lg">{formData.email}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Nomor Telepon:</span>
+              <span className="font-medium text-lg">Phone Number:</span>
               <span className="text-lg">{formData.phoneNumber}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Alamat:</span>
+              <span className="font-medium text-lg">Address:</span>
               <span className="text-lg">{formData.businessAddress}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Kebutuhan Limbah:</span>
+              <span className="font-medium text-lg">Waste Needs:</span>
               <span className="text-lg">{formData.wasteNeeds}</span>
             </div>
           </div>
         ) : (
-          // Form edit data pengguna
+          // Edit user data form
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -134,11 +138,22 @@ export default function ProfilePage() {
             className="space-y-6"
           >
             <div>
-              <label className="block text-sm font-medium">Nama:</label>
+              <label className="block text-sm font-medium">Name:</label>
               <input
                 type="text"
                 name="ownerName"
                 value={formData.ownerName}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 border rounded-md focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Business Name:</label>
+              <input
+                type="text"
+                name="businessName"
+                value={formData.businessName}
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 border rounded-md focus:outline-none"
@@ -156,7 +171,7 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium">Nomor Telepon:</label>
+              <label className="block text-sm font-medium">Phone Number:</label>
               <input
                 type="text"
                 name="phoneNumber"
@@ -167,7 +182,7 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium">Alamat:</label>
+              <label className="block text-sm font-medium">Address:</label>
               <input
                 type="text"
                 name="businessAddress"
@@ -178,7 +193,7 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium">Kebutuhan Limbah:</label>
+              <label className="block text-sm font-medium">Waste Needs:</label>
               <select
                 name="wasteNeeds"
                 value={formData.wasteNeeds}
@@ -191,35 +206,35 @@ export default function ProfilePage() {
               </select>
             </div>
 
-            {/* Pesan sukses atau error */}
+            {/* Success or error message */}
             {success && (
-              <p className="text-green-500 text-sm">Profil berhasil diperbarui!</p>
+              <p className="text-green-500 text-sm">Profile updated successfully!</p>
             )}
             {error && <p className="text-red-500 text-sm">{error}</p>}
 
-            {/* Tombol Simpan */}
+            {/* Save button */}
             <button
               type="submit"
               className="w-full bg-[#0A4635] text-white py-2 rounded-md hover:bg-[#086532] transition mt-6"
             >
-              Simpan Perubahan
+              Save Changes
             </button>
           </form>
         )}
 
-        {/* Tombol Edit dan Hapus di bawah, ujung kanan */}
+        {/* Edit and Delete buttons at the bottom, right side */}
         <div className="flex justify-end space-x-4 mt-6">
           <button
             onClick={() => setIsEditing(true)}
             className="bg-[#0A4635] text-white py-2 px-4 rounded-md hover:bg-[#086532] transition"
           >
-            Edit Profil
+            Edit Profile
           </button>
           <button
             onClick={handleDeleteAccount}
             className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition"
           >
-            Hapus Akun
+            Delete Account
           </button>
         </div>
       </div>

@@ -14,7 +14,7 @@ const AgreementModal = ({ isOpen, onClose, onAccept }: AgreementModalProps) => {
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-        <h2 className="text-xl font-bold mb-4">Syarat dan Ketentuan</h2>
+        <h2 className="text-xl font-bold mb-4">Agreement</h2>
         <p className="mb-4 text-sm text-gray-600">
           Dengan melanjutkan, Anda setuju dengan syarat dan ketentuan berikut:
           <br />
@@ -39,7 +39,7 @@ const AgreementModal = ({ isOpen, onClose, onAccept }: AgreementModalProps) => {
             onClick={onClose}
             className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md mr-2"
           >
-            Batal
+            Cancel
           </button>
           <button
             onClick={onAccept}
@@ -50,7 +50,7 @@ const AgreementModal = ({ isOpen, onClose, onAccept }: AgreementModalProps) => {
                 : "bg-gray-300 text-gray-600 cursor-not-allowed"
             }`}
           >
-            Lanjutkan
+            Submit
           </button>
         </div>
       </div>

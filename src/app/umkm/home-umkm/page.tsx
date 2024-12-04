@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebaseconfig"; // Konfigurasi Firebase
+import { auth, db } from "@/lib/firebaseconfig"; // Firebase configuration
 import { useRouter } from "next/navigation";
 import AgreementModal from "@/components/agree/AgreementModal";
 
 export default function Homeumkm() {
-  const [industries, setIndustries] = useState<
-    { id: string; companyName: string; wasteNeeds: string }[]
-  >([]);
+  const [industries, setIndustries] = useState<{
+    id: string;
+    companyName: string;
+    wasteNeeds: string;
+  }[]>([]);
   const [userCategory, setUserCategory] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
@@ -69,7 +71,7 @@ export default function Homeumkm() {
 
   const handleAcceptAgreement = () => {
     setIsModalOpen(false);
-    router.push("/form-pengajuan"); // Redirect ke halaman form pengajuan
+    router.push("/form-pengajuan"); // Redirect to submission form
   };
 
   return (
@@ -88,10 +90,10 @@ export default function Homeumkm() {
         </p>
       </div>
 
-      {/* Informasi Industri */}
-      <h1 className="text-2xl font-bold mb-6">Informasi Industri</h1>
+      {/* Industry Information */}
+      <h1 className="text-2xl font-bold mb-6">Industry Information</h1>
 
-      {/* Grid Informasi */}
+      {/* Industry Grid */}
       {industries.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {industries.map((industry) => (
@@ -99,26 +101,29 @@ export default function Homeumkm() {
               key={industry.id}
               className="border border-gray-300 p-4 rounded-md shadow-md flex flex-col min-h-[200px]"
             >
-              <div className="flex justify-between items-center h-full">
+              <div className="flex flex-col h-full">
                 <div>
-                  <h2 className="text-[#0A4635] font-bold">{industry.companyName}</h2>
+                  <h1 className="text-[#0A4635] font-bold">{industry.companyName}</h1>
                   <p className="text-sm text-[#0A4635]">
-                    Kategori: {industry.wasteNeeds}
+                    Category: {industry.wasteNeeds}
                   </p>
                 </div>
 
-                <button
-                  onClick={handlePengajuanClick}
-                  className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition"
-                >
-                  Pengajuan
-                </button>
+                {/* Move Submission button to the bottom right */}
+                <div className="mt-auto flex justify-end">
+                  <button
+                    onClick={handlePengajuanClick}
+                    className="px-4 py-2 bg-[#0A4635] text-white rounded-md hover:bg-gray-700 transition"
+                  >
+                    Submission
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <p className="text-lg text-gray-500">Tidak ada industri yang sesuai dengan kategori Anda.</p>
+        <p className="text-lg text-gray-500">No industry matches your category.</p>
       )}
     </div>
   );
