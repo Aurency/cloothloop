@@ -64,7 +64,7 @@ export default function Chatbot(){
             <TbMessageChatbot
             onClick={()=> setShowChat(!showChat)}
             size={45}
-            className="fixed bottom-10 right-12 text-[#0A4635] rounded-full bg-[#FFEA7F] hover:bg-[#fcde49] hover:cursor-pointer hover:rounded-full p-2"
+            className="fixed bottom-10 right-12 text-white rounded-full bg-[#0A4635] hover:bg-[#15392e] hover:cursor-pointer shadow-md hover:rounded-full p-2"
             />
     
 
