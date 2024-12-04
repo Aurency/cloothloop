@@ -14,6 +14,7 @@ export default function Homeumkm() {
   }[]>([]);
   const [userCategory, setUserCategory] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmissionSuccessful, setIsSubmissionSuccessful] = useState(false); // Confirmation state
   const router = useRouter();
 
   const fetchIndustries = async (category: string) => {
@@ -70,8 +71,12 @@ export default function Homeumkm() {
   };
 
   const handleAcceptAgreement = () => {
-    setIsModalOpen(false);
-    router.push("/form-pengajuan"); // Redirect to submission form
+    setIsModalOpen(false); // Close the modal
+    setIsSubmissionSuccessful(true); // Show confirmation message
+
+    setTimeout(() => {
+      setIsSubmissionSuccessful(false); // Hide confirmation after 3 seconds
+    }, 3000);
   };
 
   return (
@@ -89,6 +94,13 @@ export default function Homeumkm() {
           This is your home page! Start using the app and explore the features.
         </p>
       </div>
+
+      {/* Confirmation Message */}
+      {isSubmissionSuccessful && (
+        <div className="mb-6 p-4 bg-green-100 text-green-800 rounded-md shadow-md">
+          Submission successfully submitted!
+        </div>
+      )}
 
       {/* Industry Information */}
       <h1 className="text-2xl font-bold mb-6">Industry Information</h1>
