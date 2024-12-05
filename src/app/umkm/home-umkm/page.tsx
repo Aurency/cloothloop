@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc, addDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebaseconfig"; // Firebase configuration
 import { useRouter } from "next/navigation";
 import AgreementModal from "@/components/agree/AgreementModal";
@@ -13,7 +13,10 @@ export default function Homeumkm() {
     wasteNeeds: string;
   }[]>([]);
   const [userCategory, setUserCategory] = useState<string | null>(null);
+  const [userBusinessName, setUserBusinessName] = useState<string | null>(null); // Store business name
+  const [selectedIndustryId, setSelectedIndustryId] = useState<string | null>(null); // Store selected industry ID
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmissionSuccessful, setIsSubmissionSuccessful] = useState(false); // Confirmation state
   const router = useRouter();
 
   const fetchIndustries = async (category: string) => {
@@ -35,7 +38,7 @@ export default function Homeumkm() {
   };
 
   useEffect(() => {
-    const fetchUserCategory = async () => {
+    const fetchUserCategoryAndBusinessName = async () => {
       try {
         const user = auth.currentUser;
         if (!user) {
@@ -47,16 +50,18 @@ export default function Homeumkm() {
         const userDoc = await getDoc(userRef);
 
         if (userDoc.exists()) {
-          setUserCategory(userDoc.data()?.wasteNeeds || null);
+          const data = userDoc.data();
+          setUserCategory(data?.wasteNeeds || null); // Set wasteNeeds
+          setUserBusinessName(data?.businessName || null); // Set businessName
         } else {
           console.error("User data not found");
         }
       } catch (err) {
-        console.error("Error fetching user category:", err);
+        console.error("Error fetching user data:", err);
       }
     };
 
-    fetchUserCategory();
+    fetchUserCategoryAndBusinessName();
   }, [router]);
 
   useEffect(() => {
@@ -65,13 +70,56 @@ export default function Homeumkm() {
     }
   }, [userCategory]);
 
-  const handlePengajuanClick = () => {
+  const handlePengajuanClick = (industryId: string) => {
+    setSelectedIndustryId(industryId); // Set selected industry ID
     setIsModalOpen(true);
   };
 
-  const handleAcceptAgreement = () => {
-    setIsModalOpen(false);
-    router.push("/form-pengajuan"); // Redirect to submission form
+  const handleAcceptAgreement = async () => {
+    if (!selectedIndustryId) return;
+
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        console.error("User is not logged in");
+        return;
+      }
+
+      // Ambil data industri berdasarkan industryId
+      const industryRef = doc(db, "industri", selectedIndustryId);
+      const industryDoc = await getDoc(industryRef);
+
+      if (!industryDoc.exists()) {
+        console.error("Industry not found");
+        return;
+      }
+
+      const industryData = industryDoc.data();
+
+      // Prepare data for submission
+      const submissionData = {
+        industryId: selectedIndustryId, // ID of the selected industry
+        umkmId: user.uid, // ID of the UMKM (user)
+        umkmName: userBusinessName || "Unknown", // UMKM name (businessName from user data)
+        wasteNeeds: userCategory || "Unknown", // UMKM category (wasteNeeds from user data)
+        industryCompanyName: industryData.companyName || "Unknown", // Company name from industry
+        industryWasteNeeds: industryData.wasteNeeds || "Unknown", // Waste needs from industry
+        status: "Pending", // Initial status of submission
+        createdAt: new Date(),
+      };
+
+      // Submit the data to Firestore
+      await addDoc(collection(db, "submission"), submissionData);
+
+      setIsModalOpen(false); // Close the modal
+      setIsSubmissionSuccessful(true); // Show confirmation message
+
+      setTimeout(() => {
+        setIsSubmissionSuccessful(false); // Hide confirmation after 3 seconds
+      }, 3000);
+    } catch (err) {
+      console.error("Error submitting application:", err);
+    }
   };
 
   return (
@@ -89,6 +137,13 @@ export default function Homeumkm() {
           This is your home page! Start using the app and explore the features.
         </p>
       </div>
+
+      {/* Confirmation Message */}
+      {isSubmissionSuccessful && (
+        <div className="mb-6 p-4 bg-green-100 text-green-800 rounded-md shadow-md">
+          Submission successfully submitted!
+        </div>
+      )}
 
       {/* Industry Information */}
       <h1 className="text-2xl text-[#0A4635] font-semibold mb-6">Industry Information</h1>
@@ -112,7 +167,7 @@ export default function Homeumkm() {
                 {/* Move Submission button to the bottom right */}
                 <div className="mt-auto flex justify-end">
                   <button
-                    onClick={handlePengajuanClick}
+                    onClick={() => handlePengajuanClick(industry.id)} // Pass industry ID
                     className="px-4 py-2 bg-[#0A4635] text-white text-sm rounded-md hover:bg-gray-700 transition"
                   >
                     Submission
