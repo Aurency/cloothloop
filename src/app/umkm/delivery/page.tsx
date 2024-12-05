@@ -1,8 +1,7 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebaseconfig";
-import Link from "next/link";
 
 export default function DeliveryPage() {
   const [submissions, setSubmissions] = useState<
@@ -45,7 +44,6 @@ export default function DeliveryPage() {
 
       {/* Card 1: Submission */}
       <div className="bg-white p-6 rounded-lg shadow-md w-full">
-
         <h2 className="text-xl font-semibold text-[#0A4635] mb-4">Submission</h2>
 
         {submissions.length > 0 ? (
@@ -59,7 +57,18 @@ export default function DeliveryPage() {
                   <strong>Category:</strong> {submission.industryWasteNeeds}
                 </p>
                 <p className="text-sm mb-4">
-                  <strong>Status:</strong> {submission.status}
+                  <strong>Status:</strong>{" "}
+                  <span
+                    className={`font-semibold ${
+                      submission.status === "Rejected"
+                        ? "text-red-500"
+                        : submission.status === "Accepted"
+                        ? "text-green-500"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    {submission.status}
+                  </span>
                 </p>
               </div>
             ))}
@@ -67,14 +76,11 @@ export default function DeliveryPage() {
         ) : (
           <p className="text-lg text-gray-500">No submissions found.</p>
         )}
-
       </div>
 
       {/* Card 2: Delivery */}
       <div className="bg-white p-6 rounded-lg shadow-md w-full">
-
         <h2 className="text-xl font-semibold text-[#0A4635] mb-4">Delivery</h2>
-
         <div className="text-sm text-gray-600 space-y-4">
           <p>
             <span className="font-medium">Recipient Name:</span> John Doe
@@ -91,7 +97,6 @@ export default function DeliveryPage() {
       {/* Card 3: History */}
       <div className="bg-white p-6 rounded-md shadow-md w-full">
         <h2 className="text-xl font-semibold text-[#0A4635] mb-4">History</h2>
-
         <p className="text-sm text-gray-600">
           View your previous orders and delivery history.
         </p>
