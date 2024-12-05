@@ -112,27 +112,27 @@ export default function DeliveryPage2() {
               <div className="flex justify-end space-x-4 mt-4">
                 <button
                   onClick={() => handleStatusChange(submission.id, "Accepted")}
-                  className={`px-3 py-1 text-white rounded-md hover:bg-green-600 text-xs ${
-                    submission.status === "Accepted" 
-                      ? "bg-green-500" 
-                      : submission.status === "Rejected" 
-                      ? "bg-gray-300 cursor-not-allowed" 
-                      : "bg-green-500"
+                  className={`px-3 py-1 text-white rounded-md text-xs ${
+                    submission.status === "Accepted"
+                      ? "bg-green-500"
+                      : submission.status === "Pending"
+                      ? "bg-green-500 hover:bg-green-600"
+                      : "bg-gray-300 cursor-not-allowed"
                   }`}
-                  disabled={submission.status === "Rejected"}
+                  disabled={submission.status !== "Pending"}
                 >
                   Agree
                 </button>
                 <button
                   onClick={() => handleStatusChange(submission.id, "Rejected")}
-                  className={`px-3 py-1 text-white rounded-md hover:bg-red-600 text-xs ${
-                    submission.status === "Rejected" 
-                      ? "bg-red-500" 
-                      : submission.status === "Accepted" 
-                      ? "bg-gray-300 cursor-not-allowed" 
-                      : "bg-red-500"
+                  className={`px-3 py-1 text-white rounded-md text-xs ${
+                    submission.status === "Rejected"
+                      ? "bg-red-500"
+                      : submission.status === "Pending"
+                      ? "bg-red-500 hover:bg-red-600"
+                      : "bg-gray-300 cursor-not-allowed"
                   }`}
-                  disabled={submission.status === "Accepted"}
+                  disabled={submission.status !== "Pending"}
                 >
                   Decline
                 </button>
