@@ -1,8 +1,7 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebaseconfig";
-import Link from "next/link";
 
 export default function DeliveryPage() {
   const [submissions, setSubmissions] = useState<
@@ -58,7 +57,18 @@ export default function DeliveryPage() {
                   <strong>Category:</strong> {submission.industryWasteNeeds}
                 </p>
                 <p className="text-sm mb-4">
-                  <strong>Status:</strong> {submission.status}
+                  <strong>Status:</strong>{" "}
+                  <span
+                    className={`font-semibold ${
+                      submission.status === "Rejected"
+                        ? "text-red-500"
+                        : submission.status === "Accepted"
+                        ? "text-green-500"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    {submission.status}
+                  </span>
                 </p>
               </div>
             ))}
