@@ -73,6 +73,13 @@ export default function DeliveryPage2() {
     try {
       const submissionRef = doc(db, "submission", submissionId);
       await updateDoc(submissionRef, { status });
+
+      setSubmissions((prevSubmissions) =>
+        prevSubmissions.map((submission) =>
+          submission.id === submissionId ? { ...submission, status } : submission
+        )
+      );
+
       console.log(`Submission ${submissionId} updated to ${status}`);
     } catch (error) {
       console.error("Error updating status:", error);
@@ -105,13 +112,27 @@ export default function DeliveryPage2() {
               <div className="flex justify-end space-x-4 mt-4">
                 <button
                   onClick={() => handleStatusChange(submission.id, "Accepted")}
-                  className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-xs"
+                  className={`px-3 py-1 text-white rounded-md hover:bg-green-600 text-xs ${
+                    submission.status === "Accepted" 
+                      ? "bg-green-500" 
+                      : submission.status === "Rejected" 
+                      ? "bg-gray-300 cursor-not-allowed" 
+                      : "bg-green-500"
+                  }`}
+                  disabled={submission.status === "Rejected"}
                 >
                   Agree
                 </button>
                 <button
                   onClick={() => handleStatusChange(submission.id, "Rejected")}
-                  className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 text-xs"
+                  className={`px-3 py-1 text-white rounded-md hover:bg-red-600 text-xs ${
+                    submission.status === "Rejected" 
+                      ? "bg-red-500" 
+                      : submission.status === "Accepted" 
+                      ? "bg-gray-300 cursor-not-allowed" 
+                      : "bg-red-500"
+                  }`}
+                  disabled={submission.status === "Accepted"}
                 >
                   Decline
                 </button>
