@@ -3,17 +3,21 @@
 import { useEffect, useState } from "react";
 import { collection, query, where, onSnapshot, doc, updateDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebaseconfig";
+import { FaBox, FaTruck, FaCheckCircle } from "react-icons/fa"; // Import icons
 
 export default function DeliveryPage2() {
-  const [submissions, setSubmissions] = useState<
-    {
-      id: string;
-      umkmName: string;
-      wasteNeeds: string;
-      status: string;
-      hidden?: boolean; // Menambahkan properti untuk menyembunyikan UI
-    }[]
-  >([]);
+  const [submissions, setSubmissions] = useState<{
+    id: string;
+    umkmName: string;
+    wasteNeeds: string;
+    status: string;
+    trackingStatus: {
+      wastePickUp:  boolean;
+      sentToYou: boolean;
+      orderReceived:  boolean;
+    };
+    hidden?: boolean; // Menambahkan properti untuk menyembunyikan UI
+  }[]>([]);
   const [industryId, setIndustryId] = useState<string | null>(null);
 
   // Mendapatkan industryId dari Firestore berdasarkan UID pengguna yang sedang login
@@ -57,6 +61,7 @@ export default function DeliveryPage2() {
           umkmName: submissionData.umkmName || "Unknown",
           wasteNeeds: submissionData.wasteNeeds || "Unknown",
           status: submissionData.status || "Pending",
+          trackingStatus: submissionData.trackingStatus || { wastePickUp: "Pending", sentToYou: "Pending", orderReceived: "Pending" },
         };
       });
 
@@ -84,6 +89,12 @@ export default function DeliveryPage2() {
     } catch (error) {
       console.error("Error updating status:", error);
     }
+  };
+
+  const getTrackingStatusColor = (status: string | boolean) => {
+    if (status === true) return "text-green-500"; // Completed
+    if (status === false) return "text-red-500"; // Rejected
+    return status === "Pending" ? "text-gray-500" : "text-gray-500"; // Pending or In Progress
   };
 
   return (
@@ -150,17 +161,65 @@ export default function DeliveryPage2() {
       {/* Card 2: Delivery */}
       <div className="bg-white p-6 rounded-lg shadow-md w-full">
         <h2 className="text-xl font-semibold text-[#0A4635] mb-4">Delivery</h2>
-        <div className="text-sm text-gray-600 space-y-4">
-          <p>
-            <span className="font-medium">Recipient Name:</span> John Doe
-          </p>
-          <p>
-            <span className="font-medium">Delivery Address:</span> Jl. Raya No.123, Jakarta, Indonesia
-          </p>
-          <p>
-            <span className="font-medium">Estimated Delivery Time:</span> 2-3 Business Days
-          </p>
-        </div>
+
+        {submissions.length > 0 ? (
+          <div className="flex flex-col space-y-4">
+            {/* Filter only accepted submissions */}
+            {submissions
+              .filter((submission) => submission.status === "Accepted")
+              .map((submission) => (
+                <div key={submission.id} className="p-4 bg-white rounded-lg shadow min-h-[100px]">
+                  <p className="text-sm mb-2">
+                    <strong>UMKM Name:</strong> {submission.umkmName}
+                  </p>
+                  <p className="text-sm mb-2">
+                    <strong>Category:</strong> {submission.wasteNeeds}
+                  </p>
+                  <p className="text-sm mb-4">
+                    <strong>Status:</strong>{" "}
+                    <span
+                      className={`font-semibold ${
+                        submission.status === "Accepted"
+                          ? "text-green-500"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {submission.status}
+                    </span>
+                  </p>
+
+                  {/* Progress Tracking */}
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="flex items-center justify-between space-x-8">
+                      <div className="flex flex-col items-center">
+                        <FaBox className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.wastePickUp)}`} />
+                        <p className="text-sm">Waste Pick Up</p>
+                      </div>
+
+                      <div className="flex flex-col items-center">
+                        <FaTruck className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.sentToYou)}`} />
+                        <p className="text-sm">Waste Shipping</p>
+                      </div>
+
+                      <div className="flex flex-col items-center">
+                        <FaCheckCircle className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.orderReceived)}`} />
+                        <p className="text-sm">Waste Received</p>
+                      </div>
+                    </div>
+
+                    {/* Congrats Message */}
+                    {submission.trackingStatus.orderReceived === true && (
+                      <p className="text-green-500 text-sm font-semibold">
+                        🎉 Congratulations! Your waste order has been successfully received!
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
+        ) : (
+          <p className="text-lg text-gray-500">No accepted deliveries found.</p>
+        )}
       </div>
 
       {/* Card 3: History */}
