@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { auth, db } from "@/lib/firebaseconfig";
-import { FaBox, FaTruck, FaCheckCircle } from "react-icons/fa"; // Import icons
+import { FaBox, FaTruck, FaCheckCircle } from "react-icons/fa";
 
 export default function DeliveryPage() {
   const [activeTab, setActiveTab] = useState("submission");
