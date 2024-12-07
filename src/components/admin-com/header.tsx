@@ -11,7 +11,7 @@ export function Header3() {
   };
 
   return (
-    <header className="bg-white flex justify-between items-center p-4 border-b-[#0A4635]/50 border-b-2">
+    <header className="bg-[#FAF7F1] flex justify-between items-center px-4 py-6 border-b-[#0A4635]/50 border-b-2">
       <h1 className="text-[#0A4635] text-2xl font-semibold">HOMEPAGE</h1>
 
       {/* Search Bar */}

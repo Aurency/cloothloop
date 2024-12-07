@@ -9,7 +9,7 @@ export function Homeadmin() {
         </div>
 
         <div
-        className="px-8 py-5  bg-gray-300 h-[30vh] mt-10 rounded-lg">
+        className="px-8 py-5  bg-[#FAF7F1] h-[30vh] mt-10 rounded-lg shadow-md">
           <h2>
             disini itu grafik sama nanti jumlah umkm sama industri
           </h2>
