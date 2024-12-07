@@ -17,7 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Chatbot/>
 
         {/* Content from the page */}
-        <div className="p-6 h-screen bg-[#f4ede6]">
+        <div className="p-6 h-full bg-white">
       
           {children}
         </div>

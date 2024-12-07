@@ -138,7 +138,7 @@ export default function HomeUMKM() {
 
       {/* Welcome Section */}
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold text-[#0A4635]">Welcome to ClothLoop</h2>
+        <h2 className="text-xl font-semibold text-[#0A4635]">Welcome to ClothLoop</h2>
         <p className="mt-4 text-lg text-gray-600">
           This is your home page! Start using the app and explore the features.
         </p>
@@ -167,7 +167,10 @@ export default function HomeUMKM() {
       )}
 
       {/* Industry Information */}
-      <h1 className="text-2xl text-[#0A4635] font-semibold mb-6">Industry Information</h1>
+      <h1 
+      className="text-xl text-[#0A4635] font-semibold mb-6">
+        Industry Information
+        </h1>
 
       {/* Industry Grid */}
       {industries.length > 0 ? (
@@ -175,13 +178,14 @@ export default function HomeUMKM() {
           {industries.map((industry) => (
             <div
               key={industry.id}
-              className="p-4 bg-white rounded-lg shadow-md flex flex-col min-h-[200px]"
+              className="p-4 bg-white rounded-lg flex flex-col min-h-[200px] border-[1px] border-[#0A4635]/30"
             >
               <div className="flex flex-col h-full">
                 <div>
-                  <h1 className="text-[#0A4635] font-bold">{industry.companyName}</h1>
+                  <h1 className="text-[#0A4635] font-semibold">{industry.companyName}</h1>
                   <p className="text-sm text-gray-600">
-                    Category: {industry.wasteNeeds}
+                    <strong className="font-semibold">Category:</strong>{" "}
+                    {industry.wasteNeeds}
                   </p>
                 </div>
 
