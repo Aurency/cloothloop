@@ -4,8 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-
-
 const navLinks = [
   { name: "Home", href: "/admin" },
   { name: "Industry Data", href: "/admin/data-industri" },
@@ -16,8 +14,6 @@ const navLinks = [
 
 export function Sidebar3() {
   const pathname = usePathname(); 
-
-
   return (
     <div className="w-60 h-screen bg-[#0A4635] fixed top-0 left-0 shadow-md ">
       {/* Logo Section */}

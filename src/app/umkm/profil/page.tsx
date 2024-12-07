@@ -91,13 +91,13 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center rounded-[24px] bg-white relative">
+    <div>
       {/* Profile title outside of card */}
-      <h1 className="text-2xl font-semibold mb-2 text-[#0A4635] text-left absolute top-10 left-7">
+      <h1 className="text-xl font-semibold mb-5 text-[#0A4635] text-left">
         My Profile
       </h1>
 
-      <div className="bg-white p-7 rounded-[24px] shadow-lg max-w-5xl w-full mt-16">
+      <div className="p-6 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600">
         <h2 className="text-xl font-semibold text-[#0A4635] mb-6">Profile Details</h2>
 
         {/* Display user data */}

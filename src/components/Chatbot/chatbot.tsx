@@ -69,7 +69,7 @@ export default function Chatbot(){
     
 
             {showChat && (
-                <div className="fixed mb-3 right-12 bottom-[calc(4rem+1.5rem)] hover:cursor-pointer p-5 shadow-md shadow-gray h-[474px] w-[500px] bg-[#F2E8D8] rounded-lg">
+                <div className="fixed mb-3 right-12 bottom-[calc(4rem+1.5rem)] hover:cursor-pointer p-5 shadow-md shadow-gray h-[474px] w-[500px] border-[3px] border-[#0A4635]/60 bg-white rounded-lg">
                     <div className="flex flex-col h-full">
 
                         {/*CHAT HEADER */}
