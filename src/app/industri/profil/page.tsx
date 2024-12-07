@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebaseconfig"; // Firebase configuration
-import { useRouter } from "next/navigation"; // Next.js router
-import { deleteUser } from "firebase/auth"; // To delete user account from Firebase Auth
+import { auth, db } from "@/lib/firebaseconfig"; 
+import { useRouter } from "next/navigation"; 
+import { deleteUser } from "firebase/auth"; 
 
 export default function ProfileIndustri() {
   const [formData, setFormData] = useState({
@@ -92,45 +92,45 @@ export default function ProfileIndustri() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white relative">
+    <div >
       {/* Profile title outside of card */}
-      <h1 className="text-3xl font-bold mb-2 text-[#0A4635] text-left absolute top-10 left-10">
+      <h1 className="text-xl font-semibold mb-5 text-[#0A4635] text-left">
         Industry Profile
       </h1>
 
-      <div className="bg-white p-10 rounded-lg shadow-lg max-w-5xl w-full mt-16">
-        <h2 className="text-2xl font-bold text-[#0A4635] mb-6">
+      <div className="p-6 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600">
+        <h2 className="text-xl font-semibold text-[#0A4635] mb-6">
           Company Details
         </h2>
 
         {/* Display user data */}
         {!isEditing ? (
-          <div className="space-y-4">
+          <div className="space-y-4 text-gray-600">
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Company Name:</span>
-              <span className="text-lg">{formData.companyName}</span>
+              <span className="font-medium text-sm">Company Name:</span>
+              <span className="text-sm">{formData.companyName}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-lg">
+              <span className="font-medium text-sm">
                 Business License Number:
               </span>
-              <span className="text-lg">{formData.businessLicenseNumber}</span>
+              <span className="text-sm">{formData.businessLicenseNumber}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Email:</span>
-              <span className="text-lg">{formData.email}</span>
+              <span className="font-medium text-sm">Email:</span>
+              <span className="text-sm">{formData.email}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Phone Number:</span>
-              <span className="text-lg">{formData.phoneNumber}</span>
+              <span className="font-medium text-sm">Phone Number:</span>
+              <span className="text-sm">{formData.phoneNumber}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Business Address:</span>
-              <span className="text-lg">{formData.businessAddress}</span>
+              <span className="font-medium text-sm">Business Address:</span>
+              <span className="text-sm">{formData.businessAddress}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Waste Needs:</span>
-              <span className="text-lg">{formData.wasteNeeds}</span>
+              <span className="font-medium text-sm">Waste Needs:</span>
+              <span className="text-sm">{formData.wasteNeeds}</span>
             </div>
           </div>
         ) : (

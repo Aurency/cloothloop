@@ -6,6 +6,8 @@ import { auth, db } from "@/lib/firebaseconfig";
 import { FaBox, FaTruck, FaCheckCircle } from "react-icons/fa"; // Import icons
 
 export default function DeliveryPage2() {
+  const [activeTab, setActiveTab] = useState("submission");
+
   const [submissions, setSubmissions] = useState<{
     id: string;
     umkmName: string;
@@ -97,136 +99,192 @@ export default function DeliveryPage2() {
     return status === "Pending" ? "text-gray-500" : "text-gray-500"; // Pending or In Progress
   };
 
-  return (
-    <div className="min-h-screen flex flex-col justify-start space-y-8">
-      {/* Title */}
-      <h1 className="text-2xl font-semibold text-[#0A4635] text-left">Activity</h1>
+  const renderContent = () => {
+    switch (activeTab) {
+      case "submission":
+        return (
+          <div className="mt-5 space-y-5" >
+            {submissions.length > 0 ? (
+                submissions.map(
+                  (submission) =>
+                    !submission.hidden && ( // Hanya render jika tidak tersembunyi
+                      <div key={submission.id} className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600 mb-4">
+                        <p className="text-sm mb-2">
+                          <strong>UMKM Name:</strong> {submission.umkmName}
+                        </p>
+                        <p className="text-sm mb-2">
+                          <strong>Category:</strong> {submission.wasteNeeds}
+                        </p>
+                        <p className="text-sm">
+                          <strong>Status:</strong>{" "}
+                          <span
+                            className={`font-semibold ${
+                              submission.status === "Rejected"
+                                ? "text-red-600"
+                                : submission.status === "Accepted"
+                                ? "text-green-500"
+                                : "text-orange-500"
+                            }`}
+                          >
+                            {submission.status}
+                          </span>
+                        </p>
 
-      {/* Card 1: Submission */}
-      <div className="bg-white p-6 rounded-lg shadow-md w-full">
-        <h2 className="text-xl font-semibold text-[#0A4635] mb-4">Submission</h2>
-
-        {submissions.length > 0 ? (
-          submissions.map(
-            (submission) =>
-              !submission.hidden && ( // Hanya render jika tidak tersembunyi
-                <div key={submission.id} className="p-4 mb-4 bg-white rounded-lg shadow">
-                  <p className="text-sm mb-2">
-                    <strong>UMKM Name:</strong> {submission.umkmName}
-                  </p>
-                  <p className="text-sm mb-2">
-                    <strong>Category:</strong> {submission.wasteNeeds}
-                  </p>
-                  <p className="text-sm mb-4">
-                    <strong>Status:</strong> {submission.status}
-                  </p>
-
-                  {/* Kondisional rendering untuk tombol atau teks Complete */}
-                  {submission.status === "Accepted" ? (
-                    <p className="text-green-500 font-semibold">Complete</p>
-                  ) : (
-                    <div className="flex justify-end space-x-4 mt-4">
-                      <button
-                        onClick={() => handleStatusChange(submission.id, "Accepted")}
-                        className={`px-3 py-1 text-white rounded-md text-xs ${
-                          submission.status === "Pending"
-                            ? "bg-green-500 hover:bg-green-600"
-                            : "bg-gray-300 cursor-not-allowed"
-                        }`}
-                        disabled={submission.status !== "Pending"}
-                      >
-                        Agree
-                      </button>
-                      <button
-                        onClick={() => handleStatusChange(submission.id, "Rejected")}
-                        className={`px-3 py-1 text-white rounded-md text-xs ${
-                          submission.status === "Pending"
-                            ? "bg-red-500 hover:bg-red-600"
-                            : "bg-gray-300 cursor-not-allowed"
-                        }`}
-                        disabled={submission.status !== "Pending"}
-                      >
-                        Decline
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )
-          )
-        ) : (
-          <p className="text-sm text-gray-600">No submissions available.</p>
-        )}
-      </div>
-
-      {/* Card 2: Delivery */}
-      <div className="bg-white p-6 rounded-lg shadow-md w-full">
-        <h2 className="text-xl font-semibold text-[#0A4635] mb-4">Delivery</h2>
-
-        {submissions.length > 0 ? (
-          <div className="flex flex-col space-y-4">
-            {/* Filter only accepted submissions */}
-            {submissions
-              .filter((submission) => submission.status === "Accepted")
-              .map((submission) => (
-                <div key={submission.id} className="p-4 bg-white rounded-lg shadow min-h-[100px]">
-                  <p className="text-sm mb-2">
-                    <strong>UMKM Name:</strong> {submission.umkmName}
-                  </p>
-                  <p className="text-sm mb-2">
-                    <strong>Category:</strong> {submission.wasteNeeds}
-                  </p>
-                  <p className="text-sm mb-4">
-                    <strong>Status:</strong>{" "}
-                    <span
-                      className={`font-semibold ${
-                        submission.status === "Accepted"
-                          ? "text-green-500"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      {submission.status}
-                    </span>
-                  </p>
-
-                  {/* Progress Tracking */}
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="flex items-center justify-between space-x-8">
-                      <div className="flex flex-col items-center">
-                        <FaBox className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.wastePickUp)}`} />
-                        <p className="text-sm">Waste Pick Up</p>
+                        {/* Kondisional rendering untuk tombol atau teks Complete */}
+                        {submission.status === "Accepted" ? (
+                          <p className="text-green-500 text-sm font-semibold mt-2">Complete ✅</p>
+                        ) : (
+                          <div className="flex justify-end space-x-5 mt-0">
+                            <button
+                              onClick={() => handleStatusChange(submission.id, "Accepted")}
+                              className={`px-3 py-1 text-white rounded-md text-sm ${
+                                submission.status === "Pending"
+                                  ? "bg-green-500 hover:bg-green-600"
+                                  : "bg-gray-300 cursor-not-allowed"
+                              }`}
+                              disabled={submission.status !== "Pending"}
+                            >
+                              Agree
+                            </button>
+                            <button
+                              onClick={() => handleStatusChange(submission.id, "Rejected")}
+                              className={`px-3 py-1 text-white rounded-md text-sm ${
+                                submission.status === "Pending"
+                                  ? "bg-red-500 hover:bg-red-600"
+                                  : "bg-gray-300 cursor-not-allowed"
+                              }`}
+                              disabled={submission.status !== "Pending"}
+                            >
+                              Decline
+                            </button>
+                          </div>
+                        )}
                       </div>
-
-                      <div className="flex flex-col items-center">
-                        <FaTruck className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.sentToYou)}`} />
-                        <p className="text-sm">Waste Shipping</p>
-                      </div>
-
-                      <div className="flex flex-col items-center">
-                        <FaCheckCircle className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.orderReceived)}`} />
-                        <p className="text-sm">Waste Received</p>
-                      </div>
-                    </div>
-
-                    {/* Congrats Message */}
-                    {submission.trackingStatus.orderReceived === true && (
-                      <p className="text-green-500 text-sm font-semibold">
-                        🎉 Congratulations! Your waste order has been successfully received!
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
+                    )
+                )
+              ) : (
+                <p className="text-sm text-gray-600">No submissions available.</p>
+              )}
           </div>
-        ) : (
-          <p className="text-lg text-gray-500">No accepted deliveries found.</p>
-        )}
+        );
+
+      case "delivery":
+        return (
+          <div>
+            {submissions.length > 0 ? (
+                <div className="flex flex-col space-y-5 mt-5">
+                  {/* Filter only accepted submissions */}
+                  {submissions
+                    .filter((submission) => submission.status === "Accepted")
+                    .map((submission) => (
+                      <div 
+                      key={submission.id} 
+                      className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600">
+                        <p 
+                        className="text-sm mb-2">
+                          <strong>UMKM Name:</strong>{" "}
+                          {submission.umkmName}
+                        </p>
+                        <p 
+                        className="text-sm mb-2">
+                          <strong>Category:</strong>{" "}
+                          {submission.wasteNeeds}
+                        </p>
+                        <p className="text-sm mb-2">
+                          <strong>Status:</strong>{" "}
+                          <span
+                            className={`font-semibold ${
+                              submission.status === "Accepted"
+                                ? "text-green-500"
+                                : "text-orange-500"
+                            }`}
+                          >
+                            {submission.status}
+                          </span>
+                        </p>
+
+                        {/* Progress Tracking */}
+                        <div className="flex flex-col items-center space-y-2">
+                          <div className="flex items-center justify-between space-x-14">
+                            <div className="flex flex-col items-center">
+                              <FaBox className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.wastePickUp)}`} />
+                              <p className="text-sm mt-2">Waste Pick Up</p>
+                            </div>
+
+                            <div className="flex flex-col items-center">
+                              <FaTruck className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.sentToYou)}`} />
+                              <p className="text-sm mt-2">Waste Shipping</p>
+                            </div>
+
+                            <div className="flex flex-col items-center">
+                              <FaCheckCircle className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.orderReceived)}`} />
+                              <p className="text-sm mt-2">Waste Received</p>
+                            </div>
+                          </div>
+
+                          {/* Congrats Message */}
+                          {submission.trackingStatus.orderReceived === true && (
+                            <p className="text-green-500 text-sm font-semibold">
+                              🎉 Congratulations! Your waste order has been successfully received!
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+              </div>
+            ) : (
+              <p className="text-lg text-gray-500">No accepted deliveries found.</p>
+            )}
+          </div>
+        );
+
+      {/*bagian history*/}
+      case "history":
+        return (
+          <div className="flex flex-col space-y-5 mt-5">
+            <div className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600">
+              <h2>History</h2>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col justify-start space-y-3">
+      <h1
+      className="text-xl font-semibold mb-2 text-[#0A4635] text-left">
+        Activity</h1>
+
+      <div className="relative flex space-x-4 border-b border-[#0A4635]/30 mb-5">
+        {["submission", "delivery", "history"].map((tab) => (
+          <button
+            key={tab} // Untuk identifikasi unik oleh React
+            onClick={() => setActiveTab(tab)}
+            className={`py-2 px-4 relative ${
+              activeTab === tab
+                ? "font-bold text-[#0A4635]"
+                : "font-medium text-gray-600"
+            } hover:text-[#0A4635] transition-all duration-300 ease-in-out`}
+          >
+            {tab.charAt(0).toUpperCase() + tab.slice(1)} {/* Capitalize Text */}
+
+            {/* Border-Bottom Animation */}
+            <span
+              className={`absolute left-0 bottom-0 w-full h-[2px] ${
+                activeTab === tab
+                  ? "bg-[#0A4635] scale-x-100" // Active tab
+                  : "bg-transparent scale-x-0" // Inactive tab
+              } transform transition-all duration-300 ease-in-out`}
+            />
+          </button>
+        ))}
       </div>
 
-      {/* Card 3: History */}
-      <div className="bg-white p-6 rounded-md shadow-md w-full">
-        <h2 className="text-xl font-semibold text-[#0A4635] mb-4">History</h2>
-        <p className="text-sm text-gray-600">View your previous orders and delivery history.</p>
-      </div>
+      {/* Tab Content */}
+      <div className="mt-5">{renderContent()}</div>
     </div>
   );
 }

@@ -3,11 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { FiHome, FiLogOut, FiUser } from "react-icons/fi";
+import { HiOutlineClock } from "react-icons/hi2";
 
 const navLinks = [
-  { name: "Home", href: "/umkm" },
-  { name: "Activity", href: "/umkm/delivery" },
-  { name: "Profile", href: "/umkm/profil" }
+  { name: "Home", href: "/umkm", icon: <FiHome size={20} /> },
+  { name: "Activity", href: "/umkm/delivery", icon: <HiOutlineClock size={20} /> },
+  { name: "Profile", href: "/umkm/profil", icon: <FiUser size={20} /> }
 ];
 
 export function Sidebar() {
@@ -36,18 +38,18 @@ export function Sidebar() {
                   ? "bg-[#E8F5E9]/30 text-[#FFEA7F] border-l-4 border-[#FFEA7F]" // Aktif
                   : "text-[#FAF7F1] hover:bg-[#E8F5E9]/30 hover:text-[#FFEA7F] hover:border-l-4 hover:border-[#FFEA7F]"
               }`}>
-              <span className="pl-3">{item.name}</span>
+              <span className="flex items-center gap-4">
+                {item.icon}
+                {item.name}</span>
             </Link>
           </li>
         ))}
       </ul>
 
-      <div className="border-t border-[#f4ede6]/30 mt-5">
-        <div className="text-[#f4ede6] border-[#0A4635] hover:bg-[#E8F5E9]/30 gap-4 px-4 py-5  mt-3 border-l-4 hover:border-[#FFEA7F] hover:text-[#FFEA7F]">
-          <li className="flex items-center text-md font-medium pl-3"
-            >
-            Logout {/* blmpa bisa kasih logout jadi button nya mo saja dlu diksih muncul alias ndbisa dipencet :'( */}
-          </li>
+      <div className="border-t border-[#f4ede6]/30 mt-[415px]">
+        <div className="flex items-center text-[#f4ede6] border-[#0A4635] hover:bg-[#E8F5E9]/30 gap-4 px-4 py-5 mt-3 border-l-4 hover:border-[#FFEA7F] hover:text-[#FFEA7F]">
+          <FiLogOut size={20} /> {/* Tambahkan ikon logout */}
+          <span className="text-md font-medium">Logout</span>
         </div>
       </div>
     </div>
