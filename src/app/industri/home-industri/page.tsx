@@ -129,7 +129,7 @@ export default function HomeIndustri() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] p-6">
+    <div>
       {/* Modal for Agreement */}
       <AgreementModal
         isOpen={isModalOpen}
@@ -139,28 +139,29 @@ export default function HomeIndustri() {
 
       {/* Monthly Donation Graph */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-[#0A4635] mb-4">
+        <h2 className="text-xl font-semibold text-[#0A4635] mb-4">
           Grafik Donasi Bulanan
         </h2>
-        <div className="flex flex-col md:flex-row items-start gap-6 bg-white rounded-lg shadow-md p-4">
+        <div className="flex flex-row md:flex-col items-start gap-6 bg-white rounded-lg  p-4 border-[1px] border-[#0A4635]/30">
+          <div className="flex h-[300px] w-full bg-gray-200 items-center justify-center rounded-md">
+            {/* Placeholder for graph */}
+            <span className="text-gray-600">Graph Placeholder</span>
+          </div>
+
           <div className="flex-1">
-            <p className="text-gray-700 mb-4">
+            <p className="text-gray-600 mb-4 text-center text-sm">
               Grafik Donasi Bulanan ini menunjukkan total donasi yang terkumpul
               pada setiap bulan. Data ini dapat membantu Anda memahami bagaimana
               masyarakat berkontribusi dan dapat digunakan untuk perencanaan
               lebih lanjut.
             </p>
-          </div>
-          <div className="flex-1 h-[200px] bg-gray-200 flex items-center justify-center rounded-md">
-            {/* Placeholder for graph */}
-            <span className="text-gray-500">Graph Placeholder</span>
-          </div>
+          </div>   
         </div>
       </div>
 
       {/* UMKM Recommendations */}
       <div className="mb-8">
-        <h1 className="text-2xl text-[#0A4635] font-semibold mb-6">
+        <h1 className="text-xl text-[#0A4635] font-semibold mb-4">
           Rekomendasi UMKM
         </h1>
         {umkms.length > 0 ? (
@@ -168,7 +169,7 @@ export default function HomeIndustri() {
             {umkms.map((umkm) => (
               <div
                 key={umkm.id}
-                className="p-4 bg-white rounded-lg shadow-md flex flex-col min-h-[200px]"
+                className="p-4 bg-white rounded-lg flex flex-col min-h-[200px] border-[1px] border-[#0A4635]/30"
               >
                 <div className="flex flex-col h-full">
                   <div>
@@ -200,12 +201,12 @@ export default function HomeIndustri() {
 
       {/* Waste Categories */}
       <div>
-        <h2 className="text-2xl font-bold text-[#0A4635] mb-4">
+        <h2 className="text-xl font-semibold text-[#0A4635] mb-4">
           Kategori Limbah
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-lg font-bold text-[#0A4635] mb-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 ">
+          <div className="p-6 rounded-lg border-[1px] border-[#0A4635]/30">
+            <h3 className="text-lg font-semibold text-[#0A4635] mb-2">
               Pra-Konsumsi
             </h3>
             <ul className="list-disc list-inside text-gray-700">
@@ -215,8 +216,8 @@ export default function HomeIndustri() {
               <li>Benang dan serat berlebih</li>
             </ul>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-lg font-bold text-[#0A4635] mb-2">
+          <div className="bg-white p-6 rounded-lg border-[1px] border-[#0A4635]/30">
+            <h3 className="text-lg font-semibold text-[#0A4635] mb-2">
               Pasca-Konsumsi
             </h3>
             <ul className="list-disc list-inside text-gray-700">
@@ -227,7 +228,7 @@ export default function HomeIndustri() {
           </div>
         </div>
         <div className="bg-[#0A4635] text-white p-6 rounded-lg">
-          <h3 className="text-lg font-bold mb-2">Keterangan Kondisi</h3>
+          <h3 className="text-lg font-semibold mb-2">Keterangan Kondisi</h3>
           <p className="text-gray-200">
             Limbah kategori ini dapat didaur ulang untuk mengurangi dampak
             lingkungan.

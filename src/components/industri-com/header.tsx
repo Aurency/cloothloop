@@ -11,19 +11,19 @@ export function Header2() {
   };
 
   return (
-    <header className="bg-white flex justify-between items-center p-4 border-b-[#0A4635]/50 border-b-2">
+    <header className="bg-[#FAF7F1] flex justify-between items-center p-4 border-b-[rgba(10,70,53,0.5)] border-b-[2px]">
       <h1 className="text-[#0A4635] text-2xl font-semibold">Industry Dashboard</h1>
 
       {/* Search Bar */}
-      <div className="relative w-1/4 border-[#0A4635]/50 border-2 rounded-full text-[#0A4635]">
+      <div className="relative w-1/4 border-[#0A4635]/50 border-[1px] rounded-full text-[#0A4635]">
         <input
           type="text"
           value={searchQuery}
           onChange={handleSearchChange}
           placeholder="Search..."
-          className="w-full pl-10 pr-4 py-1 rounded-full text-md text-[#0A4635]"
+          className="w-full pl-10 pr-4 py-1 rounded-full text-md text-[#0A4635]/50"
         />
-        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#0A4635]/50 text-md" />
+        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgba(10,70,53,0.5)] text-md" />
       </div>
     </header>
   );
