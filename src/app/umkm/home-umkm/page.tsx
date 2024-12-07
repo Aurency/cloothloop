@@ -6,7 +6,7 @@ import { auth, db } from "@/lib/firebaseconfig"; // Firebase configuration
 import { useRouter } from "next/navigation";
 import AgreementModal from "@/components/agree/AgreementModal";
 
-export default function Homeumkm() {
+export default function HomeUMKM() {
   const [industries, setIndustries] = useState<{
     id: string;
     companyName: string;
@@ -17,6 +17,7 @@ export default function Homeumkm() {
   const [selectedIndustryId, setSelectedIndustryId] = useState<string | null>(null); // Store selected industry ID
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmissionSuccessful, setIsSubmissionSuccessful] = useState(false); // Confirmation state
+  const [showCompleteProfileMessage, setShowCompleteProfileMessage] = useState(false); // Show profile completion message
   const router = useRouter();
 
   const fetchIndustries = async (category: string) => {
@@ -53,6 +54,11 @@ export default function Homeumkm() {
           const data = userDoc.data();
           setUserCategory(data?.wasteNeeds || null); // Set wasteNeeds
           setUserBusinessName(data?.businessName || null); // Set businessName
+
+          // Check if profile is incomplete
+          if (!data?.businessName || !data?.wasteNeeds) {
+            setShowCompleteProfileMessage(true);
+          }
         } else {
           console.error("User data not found");
         }
@@ -138,6 +144,21 @@ export default function Homeumkm() {
         </p>
       </div>
 
+      {/* Profile Completion Message */}
+      {showCompleteProfileMessage && (
+        <div className="mb-6 p-4 bg-yellow-100 text-yellow-800 rounded-md shadow-md">
+          <p>
+            Your profile is incomplete. Please complete your information in the{" "}
+            <span
+              onClick={() => router.push("/umkm/profile")}
+              className="underline text-blue-600 hover:text-blue-800 cursor-pointer"
+            >
+              profile section
+            </span>.
+          </p>
+        </div>
+      )}
+
       {/* Confirmation Message */}
       {isSubmissionSuccessful && (
         <div className="mb-6 p-4 bg-green-100 text-green-800 rounded-md shadow-md">
@@ -154,7 +175,7 @@ export default function Homeumkm() {
           {industries.map((industry) => (
             <div
               key={industry.id}
-              className=" p-4 bg-white rounded-lg shadow-md flex flex-col min-h-[200px]"
+              className="p-4 bg-white rounded-lg shadow-md flex flex-col min-h-[200px]"
             >
               <div className="flex flex-col h-full">
                 <div>
@@ -178,7 +199,10 @@ export default function Homeumkm() {
           ))}
         </div>
       ) : (
-        <p className="text-lg text-gray-500">No industry matches your category.</p>
+        <p className="text-lg text-gray-500">
+        No industry matches your category.<br />
+        <span className="text-sm text-gray-400">You must complete your profile.</span>
+      </p>
       )}
     </div>
   );
