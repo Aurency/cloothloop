@@ -18,7 +18,7 @@ export default function ChatInput({userMessage, setUserMessage, handleSendMessag
                 value={userMessage}
                 onChange={(e) => setUserMessage(e.target.value)}
                 placeholder="Masukkan pertanyaan anda"
-                className="flex p-2 h-10 w-full rounded-full border border-[#F2E8D8] px-3 text-sm text-gray-600"
+                className="flex p-2 h-10 w-full rounded-full border-[2px] border-[#15392e]/60 px-3 text-sm text-gray-600"
                 />
                 <button>
                     <HiPaperAirplane

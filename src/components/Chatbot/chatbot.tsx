@@ -64,12 +64,12 @@ export default function Chatbot(){
             <TbMessageChatbot
             onClick={()=> setShowChat(!showChat)}
             size={45}
-            className="fixed bottom-10 right-12 text-[#0A4635] rounded-full bg-[#FFEA7F] hover:bg-[#fcde49] hover:cursor-pointer hover:rounded-full p-2"
+            className="fixed bottom-10 right-12 text-white rounded-full bg-[#0A4635] hover:bg-[#15392e] hover:cursor-pointer shadow-md hover:rounded-full p-2"
             />
     
 
             {showChat && (
-                <div className="fixed mb-3 right-12 bottom-[calc(4rem+1.5rem)] hover:cursor-pointer p-5 shadow-md shadow-gray h-[474px] w-[500px] bg-[#F2E8D8] rounded-lg">
+                <div className="fixed mb-3 right-12 bottom-[calc(4rem+1.5rem)] hover:cursor-pointer p-5 shadow-md shadow-gray h-[474px] w-[500px] border-[3px] border-[#0A4635]/60 bg-white rounded-lg">
                     <div className="flex flex-col h-full">
 
                         {/*CHAT HEADER */}

@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.6",
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@mui/material": "^6.1.10",
     "@radix-ui/react-slot": "^1.1.0",
     "ai": "^4.0.11",
     "class-variance-authority": "^0.7.1",
@@ -17,6 +20,7 @@
     "firebase": "^11.0.2",
     "icons": "^1.0.0",
     "lucide-react": "^0.464.0",
+    "material-react-table": "^3.0.1",
     "next": "15.0.3",
     "openai": "^4.74.0",
     "react": "^18.2.0",

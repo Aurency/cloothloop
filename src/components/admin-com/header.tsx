@@ -11,11 +11,11 @@ export function Header3() {
   };
 
   return (
-    <header className="bg-white flex justify-between items-center p-4 border-b-[#0A4635]/50 border-b-2">
+    <header className="bg-[#FAF7F1] flex justify-between items-center p-4 border-b-[rgba(10,70,53,0.5)] border-b-[2px]">
       <h1 className="text-[#0A4635] text-2xl font-semibold">HOMEPAGE</h1>
 
       {/* Search Bar */}
-      <div className="relative w-1/4 border-[#0A4635]/50 border-2 rounded-full">
+      <div className="relative w-1/4 border-[#0A4635]/50 border-[1px] rounded-full text-[#0A4635]">
         <input
           type="text"
           value={searchQuery}

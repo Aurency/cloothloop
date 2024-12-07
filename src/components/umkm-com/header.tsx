@@ -11,19 +11,19 @@ export function Header() {
   };
 
   return (
-    <header className="bg-[#0A4635] flex justify-between items-center p-4">
-      <h1 className="text-white text-2xl font-bold">UMKM Dashboard</h1>
+    <header className="bg-[#FAF7F1] flex justify-between items-center p-4 border-b-[rgba(10,70,53,0.5)] border-b-[2px]">
+      <h1 className="text-[#0A4635] text-2xl font-semibold">UMKM Dashboard</h1>
 
       {/* Search Bar */}
-      <div className="relative w-1/4">
+      <div className="relative w-1/4 border-[#0A4635]/50 border-[1px] rounded-full text-[#0A4635]">
         <input
           type="text"
           value={searchQuery}
           onChange={handleSearchChange}
           placeholder="Search..."
-          className="w-full pl-10 pr-4 py-2 rounded-md text-lg text-gray-800"
+          className="w-full pl-10 pr-4 py-1 rounded-full text-md text-[#0A4635]/50"
         />
-        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgba(10,70,53,0.5)] text-md" />
       </div>
     </header>
   );

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 
-export function Header2() {
+export function Header4() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -12,7 +12,7 @@ export function Header2() {
 
   return (
     <header className="bg-white flex justify-between items-center p-4 border-b-[#0A4635]/50 border-b-2">
-      <h1 className="text-[#0A4635] text-2xl font-semibold">Industry Dashboard</h1>
+      <h1 className="text-[#0A4635] text-2xl font-semibold">Courier Dashboard</h1>
 
       {/* Search Bar */}
       <div className="relative w-1/4 border-[#0A4635]/50 border-2 rounded-full text-[#0A4635]">

@@ -91,41 +91,41 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white relative">
+    <div>
       {/* Profile title outside of card */}
-      <h1 className="text-3xl font-bold mb-2 text-[#0A4635] text-left absolute top-10 left-10">
+      <h1 className="text-xl font-semibold mb-5 text-[#0A4635] text-left">
         My Profile
       </h1>
 
-      <div className="bg-white p-10 rounded-lg shadow-lg max-w-5xl w-full mt-16">
-        <h2 className="text-2xl font-bold text-[#0A4635] mb-6">Profile Details</h2>
+      <div className="p-6 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600">
+        <h2 className="text-xl font-semibold text-[#0A4635] mb-6">Profile Details</h2>
 
         {/* Display user data */}
         {!isEditing ? (
-          <div className="space-y-4">
+          <div className="space-y-4 text-gray-600">
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Owner Name:</span>
-              <span className="text-lg">{formData.ownerName}</span>
+              <span className="font-medium text-sm">Owner Name:</span>
+              <span className="text-sm">{formData.ownerName}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Business Name:</span>
-              <span className="text-lg">{formData.businessName}</span>
+              <span className="font-medium text-sm">Business Name:</span>
+              <span className="text-sm">{formData.businessName}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Email:</span>
-              <span className="text-lg">{formData.email}</span>
+              <span className="font-medium text-sm">Email:</span>
+              <span className="text-sm">{formData.email}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Phone Number:</span>
-              <span className="text-lg">{formData.phoneNumber}</span>
+              <span className="font-medium text-sm">Phone Number:</span>
+              <span className="text-sm">{formData.phoneNumber}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Address:</span>
-              <span className="text-lg">{formData.businessAddress}</span>
+              <span className="font-medium text-sm">Address:</span>
+              <span className="text-sm">{formData.businessAddress}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-lg">Waste Needs:</span>
-              <span className="text-lg">{formData.wasteNeeds}</span>
+              <span className="font-medium text-sm">Waste Needs:</span>
+              <span className="text-sm">{formData.wasteNeeds}</span>
             </div>
           </div>
         ) : (
