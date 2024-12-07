@@ -5,12 +5,15 @@ import { collection, query, where, onSnapshot, doc, updateDoc, getDoc } from "fi
 import { auth, db } from "@/lib/firebaseconfig";
 
 export default function DeliveryPage2() {
-  const [submissions, setSubmissions] = useState<{
-    id: string;
-    umkmName: string;
-    wasteNeeds: string;
-    status: string;
-  }[]>([]);
+  const [submissions, setSubmissions] = useState<
+    {
+      id: string;
+      umkmName: string;
+      wasteNeeds: string;
+      status: string;
+      hidden?: boolean; // Menambahkan properti untuk menyembunyikan UI
+    }[]
+  >([]);
   const [industryId, setIndustryId] = useState<string | null>(null);
 
   // Mendapatkan industryId dari Firestore berdasarkan UID pengguna yang sedang login
@@ -47,20 +50,15 @@ export default function DeliveryPage2() {
     );
 
     const unsubscribe = onSnapshot(submissionQuery, (snapshot) => {
-      console.log("Query snapshot:", snapshot); // Log untuk melihat apakah data ada di snapshot
       const fetchedSubmissions = snapshot.docs.map((doc) => {
         const submissionData = doc.data();
         return {
           id: doc.id,
-          umkmName: submissionData.umkmName || "Unknown", // Menampilkan nama UMKM
-          wasteNeeds: submissionData.wasteNeeds || "Unknown", // Menampilkan kategori waste
-          status: submissionData.status || "Pending", // Menampilkan status submission
+          umkmName: submissionData.umkmName || "Unknown",
+          wasteNeeds: submissionData.wasteNeeds || "Unknown",
+          status: submissionData.status || "Pending",
         };
       });
-
-      if (fetchedSubmissions.length === 0) {
-        console.log("No submissions found for this industryId.");
-      }
 
       setSubmissions(fetchedSubmissions);
     });
@@ -76,7 +74,9 @@ export default function DeliveryPage2() {
 
       setSubmissions((prevSubmissions) =>
         prevSubmissions.map((submission) =>
-          submission.id === submissionId ? { ...submission, status } : submission
+          submission.id === submissionId
+            ? { ...submission, status, hidden: status === "Rejected" }
+            : submission
         )
       );
 
@@ -96,49 +96,52 @@ export default function DeliveryPage2() {
         <h2 className="text-xl font-semibold text-[#0A4635] mb-4">Submission</h2>
 
         {submissions.length > 0 ? (
-          submissions.map((submission) => (
-            <div key={submission.id} className="p-4 mb-4 bg-white rounded-lg shadow">
-              <p className="text-sm mb-2">
-                <strong>UMKM Name:</strong> {submission.umkmName}
-              </p>
-              <p className="text-sm mb-2">
-                <strong>Category:</strong> {submission.wasteNeeds}
-              </p>
-              <p className="text-sm mb-4">
-                <strong>Status:</strong> {submission.status}
-              </p>
+          submissions.map(
+            (submission) =>
+              !submission.hidden && ( // Hanya render jika tidak tersembunyi
+                <div key={submission.id} className="p-4 mb-4 bg-white rounded-lg shadow">
+                  <p className="text-sm mb-2">
+                    <strong>UMKM Name:</strong> {submission.umkmName}
+                  </p>
+                  <p className="text-sm mb-2">
+                    <strong>Category:</strong> {submission.wasteNeeds}
+                  </p>
+                  <p className="text-sm mb-4">
+                    <strong>Status:</strong> {submission.status}
+                  </p>
 
-              {/* Tombol di bawah kanan */}
-              <div className="flex justify-end space-x-4 mt-4">
-                <button
-                  onClick={() => handleStatusChange(submission.id, "Accepted")}
-                  className={`px-3 py-1 text-white rounded-md text-xs ${
-                    submission.status === "Accepted"
-                      ? "bg-green-500"
-                      : submission.status === "Pending"
-                      ? "bg-green-500 hover:bg-green-600"
-                      : "bg-gray-300 cursor-not-allowed"
-                  }`}
-                  disabled={submission.status !== "Pending"}
-                >
-                  Agree
-                </button>
-                <button
-                  onClick={() => handleStatusChange(submission.id, "Rejected")}
-                  className={`px-3 py-1 text-white rounded-md text-xs ${
-                    submission.status === "Rejected"
-                      ? "bg-red-500"
-                      : submission.status === "Pending"
-                      ? "bg-red-500 hover:bg-red-600"
-                      : "bg-gray-300 cursor-not-allowed"
-                  }`}
-                  disabled={submission.status !== "Pending"}
-                >
-                  Decline
-                </button>
-              </div>
-            </div>
-          ))
+                  {/* Kondisional rendering untuk tombol atau teks Complete */}
+                  {submission.status === "Accepted" ? (
+                    <p className="text-green-500 font-semibold">Complete</p>
+                  ) : (
+                    <div className="flex justify-end space-x-4 mt-4">
+                      <button
+                        onClick={() => handleStatusChange(submission.id, "Accepted")}
+                        className={`px-3 py-1 text-white rounded-md text-xs ${
+                          submission.status === "Pending"
+                            ? "bg-green-500 hover:bg-green-600"
+                            : "bg-gray-300 cursor-not-allowed"
+                        }`}
+                        disabled={submission.status !== "Pending"}
+                      >
+                        Agree
+                      </button>
+                      <button
+                        onClick={() => handleStatusChange(submission.id, "Rejected")}
+                        className={`px-3 py-1 text-white rounded-md text-xs ${
+                          submission.status === "Pending"
+                            ? "bg-red-500 hover:bg-red-600"
+                            : "bg-gray-300 cursor-not-allowed"
+                        }`}
+                        disabled={submission.status !== "Pending"}
+                      >
+                        Decline
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )
+          )
         ) : (
           <p className="text-sm text-gray-600">No submissions available.</p>
         )}
