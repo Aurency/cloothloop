@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebaseconfig"; // Firebase configuration
 import { useRouter } from "next/navigation";
-import AgreementModal from "@/components/agree/AgreementModal";
+import AgreementModal2 from "@/components/agree/AgreementModal2";
 
 export default function HomeIndustri() {
   const [umkms, setUmkms] = useState<
@@ -131,7 +131,7 @@ export default function HomeIndustri() {
   return (
     <div>
       {/* Modal for Agreement */}
-      <AgreementModal
+      <AgreementModal2
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAccept={handleAcceptAgreement}

@@ -1,5 +1,6 @@
 "use client";
 
+
 import HomeIndustri from "./home-industri/page";
 import { Sidebar2 } from "../../components/industri-com/sidebar";
 
