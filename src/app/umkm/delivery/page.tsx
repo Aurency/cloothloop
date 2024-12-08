@@ -18,6 +18,7 @@ export default function DeliveryPage() {
       orderReceived: boolean;
     };
   }[]>([]);
+  const [isLoading, setIsLoading] = useState(true); 
 
   useEffect(() => {
     const fetchSubmissions = async () => {
@@ -52,6 +53,8 @@ export default function DeliveryPage() {
         setSubmissions(submissionsData);
       } catch (err) {
         console.error("Error fetching submissions:", err);
+      } finally {
+        setIsLoading(false); 
       }
     };
 
@@ -69,10 +72,11 @@ export default function DeliveryPage() {
 
   // Redirect ke History jika semua kartu selesai
   useEffect(() => {
-    if (filteredSubmissions.length === 0 && activeTab === "delivery") {
+    if (!isLoading && filteredSubmissions.length === 0 && activeTab === "delivery") {
+      alert("No accepted deliveries. Switching to history.");
       setActiveTab("history");
     }
-  }, [filteredSubmissions, activeTab]);
+  }, [filteredSubmissions, activeTab, isLoading]);
 
   const renderContent = () => {
     switch (activeTab) {
