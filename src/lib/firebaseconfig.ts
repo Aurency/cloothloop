@@ -3,11 +3,9 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getStorage } from "firebase/storage"; // Firebase Storage
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyBlXqSsuRGjce-9v4USNghyv6dTnTmE45o",
   authDomain: "clothloop-dfbb2.firebaseapp.com",
@@ -25,6 +23,7 @@ const app = initializeApp(firebaseConfig);
 // Modul Firebase yang sering digunakan
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app); // Initialize Storage
 
 // Inisialisasi analytics hanya jika didukung
 let analytics: any = null;
@@ -39,4 +38,5 @@ if (typeof window !== "undefined") {
   });
 }
 
-export { app, auth, db, analytics };
+// Ekspor Firebase dan modul-modulnya
+export { app, auth, db, analytics, storage };

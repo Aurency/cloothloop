@@ -1,15 +1,90 @@
 import { useState } from "react";
+import { addDoc, collection } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "@/lib/firebaseconfig";
 
 interface AgreementModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAccept: (data: { subCategory: string; wasteImage: File | null }) => void;
+  umkmId: string; // Tambahkan prop umkmId
+  industryId: string; // Tambahkan prop industryId
 }
 
-const AgreementModal = ({ isOpen, onClose, onAccept }: AgreementModalProps) => {
+const AgreementModal2 = ({ 
+  isOpen, 
+  onClose, 
+  onAccept, 
+  umkmId, 
+  industryId 
+}: AgreementModalProps) => {
   const [isChecked, setIsChecked] = useState(false);
-  const [subCategory, setSubCategory] = useState<string>(""); // Dropdown state
+  const [subCategory, setSubCategory] = useState<string>("");
   const [wasteImage, setWasteImage] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validateForm = () => {
+    if (!wasteImage || !subCategory || !isChecked) {
+      alert("Please complete all the requirement and agree the agreement.");
+      return false;
+    }
+    return true;
+  };
+
+  const handleFileChange = (file: File | null) => {
+    if (file) {
+      const allowedTypes = ["image/jpeg", "image/png"];
+      if (!allowedTypes.includes(file.type)) {
+        alert("File format must be JPEG or PNG.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert(" File size must less than 5MB.");
+        return;
+      }
+      setWasteImage(file);
+    } else {
+      setWasteImage(null);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+
+    try {
+      // Upload image to Firebase Storage
+      const storageRef = ref(storage, `donations/${industryId}/${wasteImage!.name}`);
+      const snapshot = await uploadBytes(storageRef, wasteImage!);
+      const imageUrl = await getDownloadURL(snapshot.ref);
+
+      // Simpan data ke Firestore
+      const donationsRef = collection(db, "donations");
+      await addDoc(donationsRef, {
+        umkmId,
+        industryId,
+        subCategory,
+        wasteImage: imageUrl,
+        createdAt: new Date().toISOString()
+      });
+
+      // Panggil onAccept dengan data file asli
+      onAccept({ 
+        subCategory, 
+        wasteImage 
+      });
+      
+      alert("Donation successfully submitted!");
+      onClose();
+    } catch (error) {
+      console.error("Error submitting data:", error);
+      alert("Failed submit donation. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
 
   if (!isOpen) return null;
 
@@ -21,15 +96,12 @@ const AgreementModal = ({ isOpen, onClose, onAccept }: AgreementModalProps) => {
           Dengan melanjutkan, Anda setuju dengan syarat dan ketentuan berikut:
           <br />
           - Anda bertanggung jawab atas pengajuan yang diajukan.
-          <br />- Informasi yang diberikan harus sesuai fakta.
+          <br />
+          - Informasi yang diberikan harus sesuai fakta.
         </p>
 
-        {/* Dropdown for Sub-Category */}
         <div className="mb-4">
-          <label
-            htmlFor="subCategory"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="subCategory" className="block text-sm font-medium text-gray-700 mb-1">
             Sub-Category
           </label>
           <select
@@ -47,12 +119,8 @@ const AgreementModal = ({ isOpen, onClose, onAccept }: AgreementModalProps) => {
           </select>
         </div>
 
-        {/* Upload Waste Image */}
         <div className="mb-4">
-          <label
-            htmlFor="wasteImage"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="wasteImage" className="block text-sm font-medium text-gray-700 mb-1">
             Upload Waste Image
           </label>
           <input
@@ -60,11 +128,10 @@ const AgreementModal = ({ isOpen, onClose, onAccept }: AgreementModalProps) => {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => setWasteImage(e.target.files?.[0] || null)}
+            onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
           />
         </div>
 
-        {/* Agreement Checkbox */}
         <div className="flex items-center mb-4">
           <input
             type="checkbox"
@@ -78,24 +145,24 @@ const AgreementModal = ({ isOpen, onClose, onAccept }: AgreementModalProps) => {
           </label>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex justify-end">
           <button
             onClick={onClose}
             className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md mr-2"
+            disabled={isSubmitting}
           >
             Cancel
           </button>
           <button
-            onClick={() => onAccept({ subCategory, wasteImage })}
-            disabled={!isChecked || !subCategory || !wasteImage}
+            onClick={handleSubmit}
+            disabled={!isChecked || !subCategory || !wasteImage || isSubmitting}
             className={`px-4 py-2 rounded-md ${
-              isChecked && subCategory && wasteImage
+              isChecked && subCategory && wasteImage && !isSubmitting
                 ? "bg-green-600 text-white hover:bg-green-700"
                 : "bg-gray-300 text-gray-600 cursor-not-allowed"
             }`}
           >
-            Submit
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
         </div>
       </div>
@@ -103,4 +170,4 @@ const AgreementModal = ({ isOpen, onClose, onAccept }: AgreementModalProps) => {
   );
 };
 
-export default AgreementModal;
+export default AgreementModal2;

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebaseconfig";
 import { FaBox, FaTruck, FaCheckCircle } from "react-icons/fa";
 
 export default function DeliveryPage() {
-  const [activeTab, setActiveTab] = useState("submission");
+  const [activeTab, setActiveTab] = useState("donations");
   const [submissions, setSubmissions] = useState<{
     id: string;
     industryCompanyName: string;
@@ -18,8 +18,20 @@ export default function DeliveryPage() {
       orderReceived: boolean;
     };
   }[]>([]);
-  const [isLoading, setIsLoading] = useState(true); 
 
+  const [donations, setDonations] = useState<
+    {
+      id: string;
+      industryName: string;
+      wasteCategory: string;
+      subCategory :string;
+      wasteImage: string;
+      businessAddress: string;
+    }[]
+  >([]);
+
+
+  // Fetch submissions
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
@@ -61,16 +73,52 @@ export default function DeliveryPage() {
     fetchSubmissions();
   }, []);
 
+  useEffect(() => {
+    const fetchDonations = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          console.error("User is not logged in.");
+          return;
+        }
+  
+        const donationsQuery = query(
+          collection(db, "donations"),
+          where("umkmId", "==", user.uid)
+        );
+  
+        const donationsSnapshot = await getDocs(donationsQuery);
+        const donationsData = donationsSnapshot.docs.map((doc) => {
+          const data = doc.data();
+          console.log("Donation Data:", data); // Debug log
+          return {
+            id: doc.id,
+            industryName: data.industryName || "Unknown Industry",
+            wasteCategory: data.wasteCategory || "Unknown Category",
+            subCategory: data.subCategory || "Unknown SubCategory",
+            wasteImage: data.wasteImage || "",
+            businessAddress: data.businessAddress || "Unknown Address",
+          };
+        });
+  
+        setDonations(donationsData);
+      } catch (err) {
+        console.error("Error fetching donations:", err);
+      }
+    };
+  
+    fetchDonations();
+  }, []);
+  
+
   const getTrackingStatusColor = (status: boolean) => {
     return status ? "text-green-500" : "text-gray-500";
   };
 
-  // Filter data untuk tab Delivery
   const filteredSubmissions = submissions.filter(
     (submission) => submission.status === "Accepted" && !submission.trackingStatus.orderReceived
   );
 
-  // Redirect ke History jika semua kartu selesai
   useEffect(() => {
     if (!isLoading && filteredSubmissions.length === 0 && activeTab === "delivery") {
       alert("No accepted deliveries. Switching to history.");
@@ -80,6 +128,41 @@ export default function DeliveryPage() {
 
   const renderContent = () => {
     switch (activeTab) {
+      case "donations":
+        return (
+          <div>
+            {donations.length > 0 ? (
+              <div className="flex flex-col space-y-5 mt-5">
+                {donations.map((donation) => (
+                  <div
+                    key={donation.id}
+                    className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600"
+                  >
+                    <p className="text-sm mb-2">
+                      <strong>Industry Name:</strong> {donation.industryName}
+                    </p>
+                    <p className="text-sm mb-2">
+                      <strong>Category:</strong> {donation.wasteCategory}
+                    </p>
+                    <p className="text-sm mb-2">
+                      <strong>subCategory:</strong> {donation.subCategory}
+                    </p>
+                    <div className="mt-3">
+                      <img
+                        src={donation.wasteImage}
+                        alt="Waste"
+                        className="w-full h-40 object-cover rounded-lg"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-lg text-gray-500">No donations found.</p>
+            )}
+          </div>
+        );
+
       case "submission":
         return (
           <div>
@@ -142,7 +225,6 @@ export default function DeliveryPage() {
                       </span>
                     </p>
 
-                    {/* Progress Tracking */}
                     <div className="flex flex-col items-center space-y-2">
                       <div className="flex items-center justify-between space-x-14">
                         <div className="flex flex-col items-center">
@@ -172,20 +254,12 @@ export default function DeliveryPage() {
                           <p className="text-sm mt-2">Waste Received</p>
                         </div>
                       </div>
-
-                      {/* Congrats Message */}
-                      {submission.trackingStatus.orderReceived && (
-                        <p className="text-green-500 text-sm font-semibold mt-10">
-                          🎉 Congratulations! Your waste order has been successfully
-                          received!
-                        </p>
-                      )}
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p>No accepted deliveries.</p>
+              <p className="text-lg text-gray-500">No delivery accepted.</p>
             )}
           </div>
         );
@@ -235,7 +309,7 @@ export default function DeliveryPage() {
       </h1>
 
       <div className="relative flex space-x-4 border-b border-[#0A4635]/30">
-        {["submission", "delivery", "history"].map((tab) => (
+        {["donations", "submission", "delivery", "history"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
