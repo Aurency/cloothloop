@@ -18,6 +18,7 @@ export default function DeliveryPage() {
       orderReceived: boolean;
     };
   }[]>([]);
+
   const [donations, setDonations] = useState<
     {
       id: string;
@@ -28,6 +29,7 @@ export default function DeliveryPage() {
       businessAddress: string;
     }[]
   >([]);
+
 
   // Fetch submissions
   useEffect(() => {
@@ -63,6 +65,8 @@ export default function DeliveryPage() {
         setSubmissions(submissionsData);
       } catch (err) {
         console.error("Error fetching submissions:", err);
+      } finally {
+        setIsLoading(false); 
       }
     };
 
@@ -116,10 +120,11 @@ export default function DeliveryPage() {
   );
 
   useEffect(() => {
-    if (filteredSubmissions.length === 0 && activeTab === "delivery") {
+    if (!isLoading && filteredSubmissions.length === 0 && activeTab === "delivery") {
+      alert("No accepted deliveries. Switching to history.");
       setActiveTab("history");
     }
-  }, [filteredSubmissions, activeTab]);
+  }, [filteredSubmissions, activeTab, isLoading]);
 
   const renderContent = () => {
     switch (activeTab) {

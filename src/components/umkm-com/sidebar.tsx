@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FiHome, FiLogOut, FiUser } from "react-icons/fi";
 import { HiOutlineClock } from "react-icons/hi2";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebaseconfig";
 
 const navLinks = [
   { name: "Home", href: "/umkm", icon: <FiHome size={20} /> },
@@ -14,6 +16,17 @@ const navLinks = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // Logout dari Firebase
+      router.push("/auth/signin"); // Redirect ke halaman signin
+    } catch (error) {
+      console.error("Error saat logout:", error);
+    }
+  };
+
   return (
     <div className="w-60 h-screen bg-[#0A4635] fixed top-0 left-0 shadow-md ">
        <div className ="items-center justify-center pl-10 py-6 pr-5">
@@ -47,7 +60,9 @@ export function Sidebar() {
       </ul>
 
       <div className="border-t border-[#f4ede6]/30 mt-[415px]">
-        <div className="flex items-center text-[#f4ede6] border-[#0A4635] hover:bg-[#E8F5E9]/30 gap-4 px-4 py-5 mt-3 border-l-4 hover:border-[#FFEA7F] hover:text-[#FFEA7F]">
+        <div 
+        onClick={handleLogout}
+        className="flex items-center text-[#f4ede6] border-[#0A4635] hover:bg-[#E8F5E9]/30 gap-4 px-4 py-5 mt-3 border-l-4 hover:border-[#FFEA7F] hover:text-[#FFEA7F]">
           <FiLogOut size={20} /> {/* Tambahkan ikon logout */}
           <span className="text-md font-medium">Logout</span>
         </div>
