@@ -21,7 +21,7 @@ export function Sidebar() {
   const handleLogout = async () => {
     try {
       await signOut(auth); // Logout dari Firebase
-      router.push("/auth/signin-admin"); // Redirect ke halaman signin
+      router.push("/auth/signin"); // Redirect ke halaman signin
     } catch (error) {
       console.error("Error saat logout:", error);
     }
