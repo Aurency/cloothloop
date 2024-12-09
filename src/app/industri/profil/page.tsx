@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebaseconfig"; 
-import { useRouter } from "next/navigation"; 
-import { deleteUser } from "firebase/auth"; 
+import { auth, db } from "@/lib/firebaseconfig";
+import { useRouter } from "next/navigation";
+import { deleteUser } from "firebase/auth";
+import LocationForm from "@/components/landing-com/LocationForm";
 
 export default function ProfileIndustri() {
   const [formData, setFormData] = useState({
@@ -20,15 +21,14 @@ export default function ProfileIndustri() {
   const [success, setSuccess] = useState(false);
   const router = useRouter();
 
-  // Get the current logged-in user's UID
   const user = auth.currentUser;
 
   useEffect(() => {
     if (!user) {
-      router.push("/auth/signin"); // If not logged in, redirect to Sign In page
+      router.push("/auth/signin");
       return;
     }
-    // Fetch user data from Firestore
+
     const fetchUserData = async () => {
       try {
         const userRef = doc(db, "industri", user.uid);
@@ -67,23 +67,38 @@ export default function ProfileIndustri() {
     }
   };
 
-  // Function to delete user data from Firestore and account from Firebase Auth
+  const handleLocationChange = async (location: { businessAddress: string; lat: number; lng: number }) => {
+    try {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        ...location,
+      }));
+
+      if (user?.uid) {
+        const userRef = doc(db, "industri", user.uid);
+        await updateDoc(userRef, location); // Simpan ke Firestore
+        setSuccess(true);
+        setError("");
+      }
+    } catch (err) {
+      console.error("Error updating location:", err);
+      setError("Failed to update location. Please try again.");
+    }
+  };
+
   const handleDeleteAccount = async () => {
     try {
-      // Confirm before deleting account
       const confirmDelete = window.confirm(
         "Are you sure you want to delete this account? All data will be lost and cannot be recovered!"
       );
       if (!confirmDelete) return;
 
-      // Delete user data from Firestore
       const userRef = doc(db, "industri", user?.uid || "");
       await deleteDoc(userRef);
 
-      // Delete user account from Firebase Auth
       if (user) {
         await deleteUser(user);
-        router.push("/auth/signin"); // Redirect to Sign In page after account deletion
+        router.push("/auth/signin");
       }
     } catch (err) {
       console.error("Error deleting account:", err);
@@ -92,8 +107,7 @@ export default function ProfileIndustri() {
   };
 
   return (
-    <div >
-      {/* Profile title outside of card */}
+    <div>
       <h1 className="text-xl font-semibold mb-5 text-[#0A4635] text-left">
         Industry Profile
       </h1>
@@ -103,38 +117,22 @@ export default function ProfileIndustri() {
           Company Details
         </h2>
 
-        {/* Display user data */}
         {!isEditing ? (
           <div className="space-y-4 text-gray-600">
-            <div className="flex justify-between">
-              <span className="font-medium text-sm">Company Name:</span>
-              <span className="text-sm">{formData.companyName}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium text-sm">
-                Business License Number:
-              </span>
-              <span className="text-sm">{formData.businessLicenseNumber}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium text-sm">Email:</span>
-              <span className="text-sm">{formData.email}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium text-sm">Phone Number:</span>
-              <span className="text-sm">{formData.phoneNumber}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium text-sm">Business Address:</span>
-              <span className="text-sm">{formData.businessAddress}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium text-sm">Waste Needs:</span>
-              <span className="text-sm">{formData.wasteNeeds}</span>
-            </div>
+            {/* Tampilkan data */}
+            {Object.entries(formData)
+              .filter(([key]) => 
+                !["role", "password", "uid", "createdAt", "lat", "lng"].includes(key)
+              )
+              .map(([key, value]) => (
+                <div key={key} className="flex justify-between">
+                  <span className="font-medium text-sm capitalize">{key.replace(/([A-Z])/g, " $1")}:</span>
+                  <span className="text-sm">{value || "-"}</span>
+                </div>
+              ))}
           </div>
+        
         ) : (
-          // Edit user data form
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -142,88 +140,28 @@ export default function ProfileIndustri() {
             }}
             className="space-y-6"
           >
-            <div>
-              <label className="block text-sm font-medium">Company Name:</label>
-              <input
-                type="text"
-                name="companyName"
-                value={formData.companyName}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border rounded-md focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">
-                Business License Number:
-              </label>
-              <input
-                type="text"
-                name="businessLicenseNumber"
-                value={formData.businessLicenseNumber}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border rounded-md focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Email:</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border rounded-md focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Phone Number:</label>
-              <input
-                type="text"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border rounded-md focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">
-                Business Address:
-              </label>
-              <input
-                type="text"
-                name="businessAddress"
-                value={formData.businessAddress}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border rounded-md focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Waste Needs:</label>
-              <select
-                name="wasteNeeds"
-                value={formData.wasteNeeds}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border rounded-md focus:outline-none"
-              >
-                <option value="pre-consumption">Pre-Consumption</option>
-                <option value="post-consumption">Post-Consumption</option>
-              </select>
-            </div>
+            <LocationForm onLocationChange={handleLocationChange} />
 
-            {/* Success or error message */}
+            {/* Input lainnya */}
+            {["companyName", "businessLicenseNumber", "email", "phoneNumber", "wasteNeeds"].map((field) => (
+              <div key={field}>
+                <label className="block text-sm font-medium capitalize">{field.replace(/([A-Z])/g, " $1")}:</label>
+                <input
+                  type="text"
+                  name={field}
+                  value={formData[field as keyof typeof formData] as string}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none"
+                />
+              </div>
+            ))}
+
             {success && (
-              <p className="text-green-500 text-sm">
-                Profile updated successfully!
-              </p>
+              <p className="text-green-500 text-sm">Profile updated successfully!</p>
             )}
             {error && <p className="text-red-500 text-sm">{error}</p>}
 
-            {/* Save button */}
             <button
               type="submit"
               className="w-full bg-[#0A4635] text-white py-2 rounded-md hover:bg-[#086532] transition mt-6"
@@ -233,7 +171,6 @@ export default function ProfileIndustri() {
           </form>
         )}
 
-        {/* Edit and Delete buttons at the bottom, right side */}
         <div className="flex justify-end space-x-4 mt-6">
           <button
             onClick={() => setIsEditing(true)}
