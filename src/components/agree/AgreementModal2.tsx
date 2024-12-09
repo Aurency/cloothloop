@@ -6,26 +6,27 @@ import { db, storage } from "@/lib/firebaseconfig";
 interface AgreementModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAccept: (data: { subCategory: string; wasteImage: File | null }) => void;
-  umkmId: string; // Tambahkan prop umkmId
-  industryId: string; // Tambahkan prop industryId
+  onAccept: (data: { subCategory: string; wasteImage: File | null; weight: number }) => void;
+  umkmId: string;
+  industryId: string;
 }
 
-const AgreementModal2 = ({ 
-  isOpen, 
-  onClose, 
-  onAccept, 
-  umkmId, 
-  industryId 
+const AgreementModal2 = ({
+  isOpen,
+  onClose,
+  onAccept,
+  umkmId,
+  industryId
 }: AgreementModalProps) => {
   const [isChecked, setIsChecked] = useState(false);
   const [subCategory, setSubCategory] = useState<string>("");
   const [wasteImage, setWasteImage] = useState<File | null>(null);
+  const [weight, setWeight] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateForm = () => {
-    if (!wasteImage || !subCategory || !isChecked) {
-      alert("Please complete all the requirement and agree the agreement.");
+    if (!wasteImage || !subCategory || !isChecked || weight <= 0) {
+      alert("Please complete all the requirements and ensure valid donation weight.");
       return false;
     }
     return true;
@@ -39,12 +40,27 @@ const AgreementModal2 = ({
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        alert(" File size must less than 5MB.");
+        alert("File size must be less than 5MB.");
         return;
       }
       setWasteImage(file);
     } else {
       setWasteImage(null);
+    }
+  };
+
+  const handleWeightChange = (value: string) => {
+    // Remove non-numeric characters except decimal point
+    const cleanedValue = value.replace(/[^\d.]/g, '');
+    
+    // Parse the cleaned value
+    const numericValue = parseFloat(cleanedValue);
+    
+    // Set weight if it's a valid positive number
+    if (!isNaN(numericValue) && numericValue >= 0) {
+      setWeight(numericValue);
+    } else if (cleanedValue === '') {
+      setWeight(0);
     }
   };
 
@@ -65,26 +81,27 @@ const AgreementModal2 = ({
         umkmId,
         industryId,
         subCategory,
+        weight, // Simpan berat donasi
         wasteImage: imageUrl,
         createdAt: new Date().toISOString()
       });
 
       // Panggil onAccept dengan data file asli
-      onAccept({ 
-        subCategory, 
-        wasteImage 
+      onAccept({
+        weight,
+        subCategory,
+        wasteImage,
       });
-      
+
       alert("Donation successfully submitted!");
       onClose();
     } catch (error) {
       console.error("Error submitting data:", error);
-      alert("Failed submit donation. Please try again.");
+      alert("Failed to submit donation. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
-
 
   if (!isOpen) return null;
 
@@ -132,6 +149,22 @@ const AgreementModal2 = ({
           />
         </div>
 
+        <div className="mb-4">
+          <label htmlFor="weight" className="block text-sm font-medium text-gray-700 mb-1">
+            Donation Weight (Kg)
+          </label>
+          <input
+            id="weight"
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Enter weight in Kg"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            value={weight}
+            onChange={(e) => handleWeightChange(e.target.value)}
+          />
+        </div>
+
         <div className="flex items-center mb-4">
           <input
             type="checkbox"
@@ -155,9 +188,9 @@ const AgreementModal2 = ({
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!isChecked || !subCategory || !wasteImage || isSubmitting}
+            disabled={!isChecked || !subCategory || !wasteImage || weight <= 0 || isSubmitting}
             className={`px-4 py-2 rounded-md ${
-              isChecked && subCategory && wasteImage && !isSubmitting
+              isChecked && subCategory && wasteImage && weight > 0 && !isSubmitting
                 ? "bg-green-600 text-white hover:bg-green-700"
                 : "bg-gray-300 text-gray-600 cursor-not-allowed"
             }`}
