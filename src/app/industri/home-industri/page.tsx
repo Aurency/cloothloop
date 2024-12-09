@@ -8,6 +8,7 @@ import {
   where,
   doc,
   getDoc,
+  addDoc,
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebaseconfig";
 import { useRouter } from "next/navigation";
@@ -21,6 +22,7 @@ export default function HomeIndustri() {
   }[]>([]);
   const [industryCategory, setIndustryCategory] = useState<string | null>(null);
   const [industryName, setIndustryName] = useState<string | null>(null);
+  const [businessAddress, setBusinessAddress] = useState<string | null>(null);
   const [selectedUmkmId, setSelectedUmkmId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDonationSuccessful, setIsDonationSuccessful] = useState(false);
@@ -60,6 +62,7 @@ export default function HomeIndustri() {
           const data = industryDoc.data();
           setIndustryCategory(data?.wasteNeeds || null);
           setIndustryName(data?.companyName || null);
+          setBusinessAddress(data?.businessAddress || null);
         } else {
           console.error("Industry data not found");
         }
@@ -77,20 +80,71 @@ export default function HomeIndustri() {
     }
   }, [industryCategory]);
 
-  const handleDonationClick = (umkmId: string) => {
+  const handleDonationClick = async (umkmId: string) => {
     setSelectedUmkmId(umkmId);
     setIsModalOpen(true);
   };
 
-  const handleAcceptAgreement2 = (data: { subCategory: string; wasteImage: File | null }) => {
-    // Logika tambahan setelah donasi berhasil (jika diperlukan)
+ const handleAcceptAgreement2 = async (data: { subCategory: string; wasteImage: File | null }) => {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("User not authenticated");
+      return;
+    }
+
+    // Ambil data UMKM berdasarkan selectedUmkmId
+    const umkmRef = doc(db, "umkm", selectedUmkmId!);
+    const umkmDoc = await getDoc(umkmRef);
+
+    if (!umkmDoc.exists()) {
+      console.error("UMKM not found");
+      return;
+    }
+
+    // Ambil data industri berdasarkan user.uid
+    const industryRef = doc(db, "industri", user.uid);
+    const industryDoc = await getDoc(industryRef);
+
+    if (!industryDoc.exists()) {
+      console.error("Industry not found");
+      return;
+    }
+
+    // Data UMKM dan industri
+    const umkmData = umkmDoc.data();
+    const industryData = industryDoc.data();
+
+    // Siapkan data donasi
+    const donationData = {
+      industryId: user.uid, // ID industri (user saat ini)
+      umkmId: selectedUmkmId!, // ID UMKM yang dipilih
+      umkmName: umkmData?.businessName || "Unknown", // Nama UMKM
+      wasteNeeds: umkmData?.wasteNeeds || "Unknown", // Kategori limbah dari UMKM
+      umkmAddress: umkmData?.businessAddress || "Unknown", // Kategori limbah dari UMKM
+      industryName: industryData?.companyName || "Unknown", // Nama perusahaan industri
+      wasteCategory: industryData?.wasteNeeds || "Unknown", // Kategori limbah dari industri
+      businessAddress: industryData?.businessAddress || "Unknown", // Alamat bisnis industri
+      subCategory: data.subCategory, // Sub-kategori dari modal
+      wasteImage: data.wasteImage ? `https://firebasestorage.googleapis.com/donations/${data.wasteImage.name}` : "No image provided",
+      createdAt: new Date(), // Tanggal pembuatan
+    };
+
+    // Simpan data ke koleksi donations
+    await addDoc(collection(db, "donations"), donationData);
+
+    // Tutup modal dan tampilkan pesan sukses
+    setIsModalOpen(false);
     setIsDonationSuccessful(true);
 
-    // Sembunyikan pesan konfirmasi setelah 3 detik
+    // Sembunyikan pesan sukses setelah 3 detik
     setTimeout(() => {
       setIsDonationSuccessful(false);
     }, 3000);
-  };
+  } catch (err) {
+    console.error("Error submitting donation:", err);
+  }
+};
 
   return (
     <div>
@@ -116,7 +170,7 @@ export default function HomeIndustri() {
       {/* UMKM Recommendations */}
       <div className="mb-8">
         <h1 className="text-xl text-[#0A4635] font-semibold mb-4">
-          UMKM Recomendation
+          UMKM Recommendation
         </h1>
         {umkms.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -139,7 +193,7 @@ export default function HomeIndustri() {
                       onClick={() => handleDonationClick(umkm.id)}
                       className="px-4 py-2 bg-[#0A4635] text-white text-sm rounded-md hover:bg-gray-700 transition"
                     >
-                      Donation
+                      Donate
                     </button>
                   </div>
                 </div>
@@ -148,9 +202,10 @@ export default function HomeIndustri() {
           </div>
         ) : (
           <p className="text-lg text-gray-500">
-          No UMKM matches your category.<br />
-          <span className="text-sm text-gray-400">You must complete your profile.</span>
-        </p>
+            No UMKM matches your category.
+            <br />
+            <span className="text-sm text-gray-400">You must complete your profile.</span>
+          </p>
         )}
       </div>
     </div>
