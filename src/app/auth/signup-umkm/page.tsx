@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { useRouter } from "next/navigation"; // Next.js router
-import { auth, db } from "@/lib/firebaseconfig"; // Ensure Firebase is properly configured
-import { doc, setDoc } from "firebase/firestore"; // Firestore setup
+import { useRouter } from "next/navigation";
+import { auth, db } from "@/lib/firebaseconfig";
+import { doc, setDoc } from "firebase/firestore";
 import Link from "next/link";
+import LocationForm from "@/components/landing-com/LocationForm"; // Import the LocationForm component
 
 export default function SignUpUMKM() {
   const [formData, setFormData] = useState({
@@ -14,9 +15,12 @@ export default function SignUpUMKM() {
     email: "",
     phoneNumber: "",
     businessAddress: "",
+    lat: null as number | null,
+    lng: null as number | null,
     password: "",
     wasteNeeds: "",
   });
+  
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -26,6 +30,15 @@ export default function SignUpUMKM() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleLocationChange = (location: { businessAddress: string; lat: number; lng: number }) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      businessAddress: location.businessAddress,
+      lat: location.lat,
+      lng: location.lng,
+    }));
+  };
+
   const saveUserDataToFirestore = async (uid: string, data: any) => {
     const userRef = doc(db, "umkm", uid);
     await setDoc(userRef, data);
@@ -33,6 +46,13 @@ export default function SignUpUMKM() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    // Validasi lat dan lng
+    if (formData.lat === null || formData.lng === null) {
+      setError("Location must be specified.");
+      return;
+    }
+  
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -40,24 +60,24 @@ export default function SignUpUMKM() {
         formData.password
       );
       const user = userCredential.user;
-
-      // Save user data to Firestore
+  
+      // Simpan data pengguna ke Firestore
       await saveUserDataToFirestore(user.uid, {
         ...formData,
         uid: user.uid,
-        role: "umkm", // Assign the UMKM role
+        role: "umkm", // Tetapkan peran UMKM
         createdAt: new Date().toISOString(),
       });
-
+  
       setSuccess(true);
       setError("");
-
-      // Redirect to UMKM dashboard
-      router.push("/umkm"); // Replace with the actual UMKM dashboard URL
+  
+      // Redirect ke dashboard UMKM
+      router.push("/umkm");
     } catch (err) {
       setError("Registration failed. Please check your details.");
     }
-  };
+  };  
 
   const handleGoogleSignUp = async () => {
     try {
@@ -65,34 +85,35 @@ export default function SignUpUMKM() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Save user data to Firestore
+      // Simpan data pengguna ke Firestore
       await saveUserDataToFirestore(user.uid, {
         ownerName: user.displayName || "Google User",
         businessName: "Your Business Name",
         email: user.email || "",
         phoneNumber: user.phoneNumber || "",
-        businessAddress: "Address not provided",
+        businessAddress: "Address not provided", // Default value if not provided
+        lat: null,
+        lng: null,
         wasteNeeds: "Not specified",
         uid: user.uid,
-        role: "umkm", // Assign the UMKM role
+        role: "umkm",
         createdAt: new Date().toISOString(),
       });
 
-      // Redirect to UMKM dashboard
-      router.push("/umkm"); // Replace with the actual UMKM dashboard URL
+      router.push("/umkm");
     } catch (err) {
       setError("Failed to sign up with Google. Please try again.");
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#F2E8D8]">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#F2E8D8] py-10">
       <h1 className="text-4xl font-bold text-[#0A4635] mb-8">UMKM Registration</h1>
       <form
         onSubmit={handleSignUp}
         className="bg-white p-8 rounded shadow-md max-w-lg w-full"
       >
-        {/* Owner Name */}
+        {/* Form fields */}
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-2">Owner Name</label>
           <input
@@ -106,7 +127,6 @@ export default function SignUpUMKM() {
           />
         </div>
 
-        {/* Business Name */}
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-2">Business Name</label>
           <input
@@ -150,16 +170,9 @@ export default function SignUpUMKM() {
 
         {/* Business Address */}
         <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">Business Address</label>
-          <input
-            type="text"
-            name="businessAddress"
-            value={formData.businessAddress}
-            onChange={handleChange}
-            placeholder="Enter your business address"
-            required
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#0A4635]"
-          />
+        <label className="block text-gray-700 font-medium mb-2"></label>
+          <LocationForm onLocationChange={handleLocationChange} />
+          <div className="text-xs text-gray-400 underline mt-1/2">*please direct the pin map to fill the address</div>
         </div>
 
         {/* Password */}
@@ -192,19 +205,10 @@ export default function SignUpUMKM() {
           </select>
         </div>
 
-        {/* Error Message */}
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-        {success && (
-          <p className="text-green-500 text-sm mb-4">
-            Registration successful! Welcome aboard.
-          </p>
-        )}
+        {success && <p className="text-green-500 text-sm mb-4">Registration successful!</p>}
 
-        {/* Sign Up Button */}
-        <button
-          type="submit"
-          className="w-full bg-[#0A4635] text-white py-2 rounded-md hover:bg-[#086532] transition"
-        >
+        <button type="submit" className="w-full bg-[#0A4635] text-white py-2 rounded-md">
           Sign Up
         </button>
 
@@ -217,16 +221,10 @@ export default function SignUpUMKM() {
         </button>
       </form>
 
-      {/* Link to Sign In */}
-      <div className="mt-6">
-        <p>Already have an account?</p>
-        <Link
-          href="/auth/signin"
-          className="text-blue-500 underline hover:text-blue-700"
-        >
-          Log in here
-        </Link>
-      </div>
+      <p className="mt-4 text-sm text-gray-700">
+        Already have an account?{" "}
+        <Link href="/login" className="font-medium text-[#0A4635] underline hover:font-semibold">Signin here</Link>
+      </p>
     </div>
   );
 }
