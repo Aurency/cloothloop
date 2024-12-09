@@ -181,7 +181,7 @@ export default function SignUpIndustri() {
 
         {/* Business Address Location Form Component */}
         <div className="mb-4">
-        <label className="block text-gray-700 font-medium mb-2"></label>
+        <label className="block text-gray-700 font-medium mb-2">Businesse Address</label>
           <LocationForm onLocationChange={handleLocationChange} />
           <div className="text-xs text-gray-400 underline mt-1/2">*please direct the pin map to fill the address</div>
         </div>
