@@ -176,54 +176,81 @@ export default function DeliveryPage2() {
             </div>
           </div>
         );
-
-      case "delivery":
-        return (
-          <div>
-            {submissions.filter((submission) => submission.status === "Accepted").length > 0 ? (
-              <div className="flex flex-col space-y-5 mt-5">
-                {submissions
-                  .filter(
-                    (submission) =>
-                      submission.status === "Accepted" && !submission.trackingStatus.orderReceived
-                  )
-                  .map((submission) => (
-                    <div
-                      key={submission.id}
-                      className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600"
-                    >
-                      <p className="text-sm mb-2">
-                        <strong>UMKM Name:</strong> {submission.umkmName}
-                      </p>
-                      <p className="text-sm mb-2">
-                        <strong>Category:</strong> {submission.wasteNeeds}
-                      </p>
-                      <div className="flex items-center justify-between space-x-5 mt-5">
-                        <FaBox
-                          className={`text-xl ${getTrackingStatusColor(
-                            submission.trackingStatus.wastePickUp
-                          )}`}
-                        />
-                        <FaTruck
-                          className={`text-xl ${getTrackingStatusColor(
-                            submission.trackingStatus.sentToYou
-                          )}`}
-                        />
-                        <FaCheckCircle
-                          className={`text-xl ${getTrackingStatusColor(
-                            submission.trackingStatus.orderReceived
-                          )}`}
-                        />
+        case "delivery":
+          return (
+            <div>
+              {/* Filter untuk submission yang statusnya 'Accepted' */}
+              {submissions.filter((submission) => submission.status === "Accepted").length > 0 ? (
+                <div className="flex flex-col space-y-5 mt-5">
+                  {submissions
+                    .filter(
+                      (submission) =>
+                        submission.status === "Accepted" &&
+                        !submission.trackingStatus.orderReceived // Filter berdasarkan tracking status
+                    )
+                    .map((submission) => (
+                      <div
+                        key={submission.id}
+                        className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600"
+                      >
+                        {/* Informasi UMKM */}
+                        <p className="text-sm mb-2">
+                          <strong>UMKM Name:</strong> {submission.umkmName}
+                        </p>
+                        <p className="text-sm mb-2">
+                          <strong>Category:</strong> {submission.wasteNeeds}
+                        </p>
+        
+                        {/* Progress Tracking */}
+                        <div className="flex flex-col items-center space-y-2 mt-5">
+                          <div className="flex items-center justify-between space-x-14">
+                            {/* Waste Pick Up */}
+                            <div className="flex flex-col items-center">
+                              <FaBox
+                                className={`text-xl ${getTrackingStatusColor(
+                                  submission.trackingStatus.wastePickUp
+                                )}`}
+                              />
+                              <p className="text-sm mt-2">Waste Pick Up</p>
+                            </div>
+        
+                            {/* Waste Shipping */}
+                            <div className="flex flex-col items-center">
+                              <FaTruck
+                                className={`text-xl ${getTrackingStatusColor(
+                                  submission.trackingStatus.sentToYou
+                                )}`}
+                              />
+                              <p className="text-sm mt-2">Waste Shipping</p>
+                            </div>
+        
+                            {/* Waste Received */}
+                            <div className="flex flex-col items-center">
+                              <FaCheckCircle
+                                className={`text-xl ${getTrackingStatusColor(
+                                  submission.trackingStatus.orderReceived
+                                )}`}
+                              />
+                              <p className="text-sm mt-2">Waste Received</p>
+                            </div>
+                          </div>
+        
+                          {/* Pesan Selamat */}
+                          {submission.trackingStatus.orderReceived && (
+                            <p className="text-green-500 text-sm font-semibold mt-10">
+                              🎉 Congratulations! Your waste order has been successfully received!
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-              </div>
-            ) : (
-              <p className="text-lg text-gray-500">No accepted delivery.</p> // This is the updated message
-            )}
-          </div>
-        );
-
+                    ))}
+                </div>
+              ) : (
+                <p className="text-lg text-gray-500">No accepted deliveries.</p>
+              )}
+            </div>
+          );
+        
       case "history":
         return (
           <div className="flex flex-col space-y-5 mt-5">
