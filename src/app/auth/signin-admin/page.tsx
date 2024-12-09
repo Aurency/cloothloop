@@ -58,10 +58,10 @@ export default function SignInAdmin() {
         <div className="p-y-3 mt-2">
           {/* Input Email */}
           <div className="mb-4">
-            <label className="block text-gray-600 font-normal mb-2">Username</label>
+            <label className="block text-gray-600 font-normal mb-2">Email</label>
             <input
               type="username"
-              placeholder="Username"
+              placeholder="Email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
