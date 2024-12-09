@@ -6,7 +6,11 @@ import { db, storage } from "@/lib/firebaseconfig";
 interface AgreementModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAccept: (data: { subCategory: string; wasteImage: File | null; weight: number }) => void;
+  onAccept: (data: {
+    subCategory: string;
+    wasteImage: File | null;
+    weight: number;
+  }) => void;
   umkmId: string;
   industryId: string;
 }
@@ -16,7 +20,7 @@ const AgreementModal2 = ({
   onClose,
   onAccept,
   umkmId,
-  industryId
+  industryId,
 }: AgreementModalProps) => {
   const [isChecked, setIsChecked] = useState(false);
   const [subCategory, setSubCategory] = useState<string>("");
@@ -26,7 +30,9 @@ const AgreementModal2 = ({
 
   const validateForm = () => {
     if (!wasteImage || !subCategory || !isChecked || weight <= 0) {
-      alert("Please complete all the requirements and ensure valid donation weight.");
+      alert(
+        "Please complete all the requirements and ensure valid donation weight."
+      );
       return false;
     }
     return true;
@@ -51,15 +57,15 @@ const AgreementModal2 = ({
 
   const handleWeightChange = (value: string) => {
     // Remove non-numeric characters except decimal point
-    const cleanedValue = value.replace(/[^\d.]/g, '');
-    
+    const cleanedValue = value.replace(/[^\d.]/g, "");
+
     // Parse the cleaned value
     const numericValue = parseFloat(cleanedValue);
-    
+
     // Set weight if it's a valid positive number
     if (!isNaN(numericValue) && numericValue >= 0) {
       setWeight(numericValue);
-    } else if (cleanedValue === '') {
+    } else if (cleanedValue === "") {
       setWeight(0);
     }
   };
@@ -71,7 +77,10 @@ const AgreementModal2 = ({
 
     try {
       // Upload image to Firebase Storage
-      const storageRef = ref(storage, `donations/${industryId}/${wasteImage!.name}`);
+      const storageRef = ref(
+        storage,
+        `donations/${industryId}/${wasteImage!.name}`
+      );
       const snapshot = await uploadBytes(storageRef, wasteImage!);
       const imageUrl = await getDownloadURL(snapshot.ref);
 
@@ -83,7 +92,7 @@ const AgreementModal2 = ({
         subCategory,
         weight, // Simpan berat donasi
         wasteImage: imageUrl,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       });
 
       // Panggil onAccept dengan data file asli
@@ -113,12 +122,14 @@ const AgreementModal2 = ({
           Dengan melanjutkan, Anda setuju dengan syarat dan ketentuan berikut:
           <br />
           - Anda bertanggung jawab atas pengajuan yang diajukan.
-          <br />
-          - Informasi yang diberikan harus sesuai fakta.
+          <br />- Informasi yang diberikan harus sesuai fakta.
         </p>
 
         <div className="mb-4">
-          <label htmlFor="subCategory" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="subCategory"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Sub-Category
           </label>
           <select
@@ -137,7 +148,10 @@ const AgreementModal2 = ({
         </div>
 
         <div className="mb-4">
-          <label htmlFor="wasteImage" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="wasteImage"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Upload Waste Image
           </label>
           <input
@@ -150,7 +164,10 @@ const AgreementModal2 = ({
         </div>
 
         <div className="mb-4">
-          <label htmlFor="weight" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="weight"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Donation Weight (Kg)
           </label>
           <input
@@ -188,9 +205,19 @@ const AgreementModal2 = ({
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!isChecked || !subCategory || !wasteImage || weight <= 0 || isSubmitting}
+            disabled={
+              !isChecked ||
+              !subCategory ||
+              !wasteImage ||
+              weight <= 0 ||
+              isSubmitting
+            }
             className={`px-4 py-2 rounded-md ${
-              isChecked && subCategory && wasteImage && weight > 0 && !isSubmitting
+              isChecked &&
+              subCategory &&
+              wasteImage &&
+              weight > 0 &&
+              !isSubmitting
                 ? "bg-green-600 text-white hover:bg-green-700"
                 : "bg-gray-300 text-gray-600 cursor-not-allowed"
             }`}

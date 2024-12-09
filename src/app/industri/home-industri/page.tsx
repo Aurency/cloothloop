@@ -14,13 +14,16 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "@/lib/firebaseconfig";
 import { useRouter } from "next/navigation";
 import AgreementModal2 from "@/components/agree/AgreementModal2";
+import MonthlyDonationChart from "@/components/chart/MonthlyDonationChart";
 
 export default function HomeIndustri() {
-  const [umkms, setUmkms] = useState<{
-    id: string;
-    businessName: string;
-    wasteNeeds: string;
-  }[]>([]);
+  const [umkms, setUmkms] = useState<
+    {
+      id: string;
+      businessName: string;
+      wasteNeeds: string;
+    }[]
+  >([]);
   const [industryCategory, setIndustryCategory] = useState<string | null>(null);
   const [industryName, setIndustryName] = useState<string | null>(null);
   const [businessAddress, setBusinessAddress] = useState<string | null>(null);
@@ -29,7 +32,6 @@ export default function HomeIndustri() {
   const [isDonationSuccessful, setIsDonationSuccessful] = useState(false);
   const router = useRouter();
 
-  // Fungsi untuk mengunggah gambar ke Firebase Storage
   const uploadImageToStorage = async (file: File): Promise<string> => {
     const storageRef = ref(storage, `donations/${file.name}`);
     await uploadBytes(storageRef, file);
@@ -37,7 +39,6 @@ export default function HomeIndustri() {
     return downloadURL;
   };
 
-  // Fetch UMKM berdasarkan kategori industri
   const fetchUmkms = async (category: string) => {
     try {
       const umkmsQuery = query(
@@ -56,7 +57,6 @@ export default function HomeIndustri() {
     }
   };
 
-  // Fetch data industri (kategori, nama, dan alamat)
   useEffect(() => {
     const fetchIndustryCategoryAndName = async () => {
       try {
@@ -85,21 +85,22 @@ export default function HomeIndustri() {
     fetchIndustryCategoryAndName();
   }, [router]);
 
-  // Fetch UMKM ketika kategori industri diperbarui
   useEffect(() => {
     if (industryCategory) {
       fetchUmkms(industryCategory);
     }
   }, [industryCategory]);
 
-  // Saat tombol donasi ditekan, pilih UMKM dan buka modal
   const handleDonationClick = (umkmId: string) => {
     setSelectedUmkmId(umkmId);
-    setTimeout(() => setIsModalOpen(true), 0); // Pastikan state sudah diperbarui sebelum membuka modal
+    setTimeout(() => setIsModalOpen(true), 0);
   };
 
-  // Fungsi untuk menyimpan donasi ke Firestore
-  const handleAcceptAgreement2 = async (data: { subCategory: string; wasteImage: File | null; weight: number }) => {
+  const handleAcceptAgreement2 = async (data: {
+    subCategory: string;
+    wasteImage: File | null;
+    weight: number;
+  }) => {
     try {
       const user = auth.currentUser;
       if (!user) {
@@ -112,7 +113,6 @@ export default function HomeIndustri() {
         return;
       }
 
-      // Fetch data UMKM
       const umkmRef = doc(db, "umkm", selectedUmkmId);
       const umkmDoc = await getDoc(umkmRef);
       if (!umkmDoc.exists()) {
@@ -120,7 +120,6 @@ export default function HomeIndustri() {
         return;
       }
 
-      // Fetch data industri
       const industryRef = doc(db, "industri", user.uid);
       const industryDoc = await getDoc(industryRef);
       if (!industryDoc.exists()) {
@@ -131,13 +130,11 @@ export default function HomeIndustri() {
       const umkmData = umkmDoc.data();
       const industryData = industryDoc.data();
 
-      // Upload gambar ke Firebase Storage jika ada
       let wasteImageUrl = "No image provided";
       if (data.wasteImage) {
         wasteImageUrl = await uploadImageToStorage(data.wasteImage);
       }
 
-      // Siapkan data donasi
       const donationData = {
         industryId: user.uid,
         industryName: industryData?.companyName || "Unknown",
@@ -154,14 +151,11 @@ export default function HomeIndustri() {
         status: "Donation Confirmed",
       };
 
-      // Simpan data ke koleksi donations
       await addDoc(collection(db, "donations"), donationData);
 
-      // Tutup modal dan tampilkan pesan sukses
       setIsModalOpen(false);
       setIsDonationSuccessful(true);
 
-      // Sembunyikan pesan sukses setelah 3 detik
       setTimeout(() => {
         setIsDonationSuccessful(false);
       }, 3000);
@@ -172,7 +166,6 @@ export default function HomeIndustri() {
 
   return (
     <div>
-      {/* Modal for Agreement */}
       {isModalOpen && (
         <AgreementModal2
           isOpen={isModalOpen}
@@ -183,18 +176,38 @@ export default function HomeIndustri() {
         />
       )}
 
-      {/* Donation Confirmation */}
       {isDonationSuccessful && (
         <div className="mb-6 p-4 bg-green-100 text-green-800 rounded-md shadow-md">
           <p className="text-lg font-bold">Donation successfully submitted!</p>
-          <p className="text-sm">Thank you for your participation.</p>
+          <p className="text-sm">Thank you for your contribution.</p>
         </div>
       )}
+
+      {/* Monthly Donation Graph */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-[#0A4635] mb-4">
+          Monthly Donation Chart
+        </h2>
+        <div className="flex flex-col md:flex-row items-start gap-6 bg-white rounded-lg shadow-md p-4">
+          <div className="flex-1">
+            <p className="text-gray-700 text-justify mb-4">
+              This Monthly Donation Chart illustrates the total donations
+              collected each month. The data provides valuable insights into
+              community contributions and helps in planning future initiatives.
+              Use this information to track progress and identify potential
+              areas for improvement in donation activities.
+            </p>
+          </div>
+          <div className="flex-1 h-[200px] bg-gray-200 flex items-center justify-center rounded-md">
+            <MonthlyDonationChart />
+          </div>
+        </div>
+      </div>
 
       {/* UMKM Recommendations */}
       <div className="mb-8">
         <h1 className="text-xl text-[#0A4635] font-semibold mb-4">
-          UMKM Recommendation
+          UMKM Recommendations
         </h1>
         {umkms.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -228,9 +241,48 @@ export default function HomeIndustri() {
           <p className="text-lg text-gray-500">
             No UMKM matches your category.
             <br />
-            <span className="text-sm text-gray-400">You must complete your profile.</span>
+            <span className="text-sm text-gray-400">
+              Please complete your profile to get recommendations.
+            </span>
           </p>
         )}
+      </div>
+
+      {/* Waste Categories */}
+      <div>
+        <h2 className="text-2xl font-bold text-[#0A4635] mb-4">
+          Waste Categories
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-bold text-[#0A4635] mb-2">
+              Pre-Consumption
+            </h3>
+            <ul className="list-disc list-inside text-gray-700">
+              <li>Fiber Production Waste</li>
+              <li>Excess Textile Fibers</li>
+              <li>Defective Products</li>
+              <li>Excess Yarn and Fibers</li>
+            </ul>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-bold text-[#0A4635] mb-2">
+              Post-Consumption
+            </h3>
+            <ul className="list-disc list-inside text-gray-700">
+              <li>Used Clothing</li>
+              <li>Damaged Fabric Accessories</li>
+              <li>Unused Textiles</li>
+            </ul>
+          </div>
+        </div>
+        <div className="bg-[#0A4635] text-white p-6 rounded-lg">
+          <h3 className="text-lg font-bold mb-2">Condition Information</h3>
+          <p className="text-gray-200">
+            Waste in these categories can be recycled to reduce environmental
+            impact.
+          </p>
+        </div>
       </div>
     </div>
   );
