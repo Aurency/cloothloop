@@ -74,13 +74,12 @@ export default function CourierPage() {
   ) => {
     try {
       const submissionRef = doc(db, "submission", submissionId);
-
-      // Update Firestore
+  
+      // Update Firestore tracking status (tidak mengubah status "Completed")
       await updateDoc(submissionRef, {
         [`trackingStatus.${step}`]: value,
-        ...(step === "orderReceived" && value && { status: "Completed" }), // Update status to Completed if orderReceived is true
       });
-
+  
       // Update local state
       setSubmissions((prev) =>
         prev.map((submission) =>
@@ -91,7 +90,6 @@ export default function CourierPage() {
                   ...submission.trackingStatus,
                   [step]: value,
                 },
-                ...(step === "orderReceived" && value && { status: "Completed" }),
               }
             : submission
         )
@@ -112,30 +110,28 @@ export default function CourierPage() {
       <h1 className="text-xl font-semibold text-[#0A4635]">Tracking</h1>
 
       {/* Tabs */}
-        <div className="relative flex space-x-4 border-b border-[#0A4635]/30 ">
+      <div className="relative flex space-x-4 border-b border-[#0A4635]/30 ">
         {(["onGoing", "completed"] as const).map((tab) => (
-            <button
+          <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`py-2 px-4 relative ${
-                activeTab === tab
+              activeTab === tab
                 ? "font-bold text-[#0A4635]"
                 : "font-medium text-gray-600"
             } hover:text-[#0A4635] transition-all duration-300 ease-in-out`}
-            >
+          >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
             <span
-                className={`absolute left-0 bottom-0 w-full h-[2px] ${
+              className={`absolute left-0 bottom-0 w-full h-[2px] ${
                 activeTab === tab
-                    ? "bg-[#0A4635] scale-x-100"
-                    : "bg-transparent scale-x-0"
-                } transform transition-all duration-300 ease-in-out`}
+                  ? "bg-[#0A4635] scale-x-100"
+                  : "bg-transparent scale-x-0"
+              } transform transition-all duration-300 ease-in-out`}
             />
-            </button>
+          </button>
         ))}
-        </div>
-
-
+      </div>
 
       {/* Tracking Cards */}
       <div>
@@ -156,16 +152,16 @@ export default function CourierPage() {
               <p className="text-sm mb-2">
                 <strong>Category:</strong> {submission.wasteNeeds}
               </p>
-              <p className="text-sm mb-4">
+              <p className="text-sm">
                 <strong>Status:</strong>{" "}
                 <span
                   className={
-                    submission.status === "Completed"
+                    submission.trackingStatus.orderReceived
                       ? "text-green-500 font-semibold"
-                      : "text-green-500 font-semibold"
+                      : "text-gray-600 font-medium"
                   }
                 >
-                  {submission.status}
+                  {submission.trackingStatus.orderReceived ? "Completed" : submission.status}
                 </span>
               </p>
 
@@ -244,7 +240,7 @@ export default function CourierPage() {
                       }
                     >
                       {submission.trackingStatus.orderReceived
-                        ? "✔ Confirmed"
+                        ? "✔ Completed"
                         : "Confirm"}
                     </button>
                   </div>
@@ -253,7 +249,7 @@ export default function CourierPage() {
             </div>
           ))
         ) : (
-          <p className="text-lg text-gray-500">No submissions found.</p>
+          <p>No submissions to display.</p>
         )}
       </div>
     </div>
