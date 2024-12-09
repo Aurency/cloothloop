@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { useRouter } from "next/navigation"; // Next.js router
-import { auth, db } from "@/lib/firebaseconfig"; // Ensure Firebase is properly configured
-import { doc, setDoc } from "firebase/firestore"; // Firestore setup
+import { useRouter } from "next/navigation";
+import { auth, db } from "@/lib/firebaseconfig";
+import { doc, setDoc } from "firebase/firestore";
 import Link from "next/link";
+import LocationForm from "@/components/landing-com/LocationForm"; // Import the LocationForm component
 
 export default function SignUpIndustri() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,8 @@ export default function SignUpIndustri() {
     email: "",
     phoneNumber: "",
     businessAddress: "",
+    lat: null as number | null, // Add lat to store location latitude
+    lng: null as number | null, // Add lng to store location longitude
     password: "",
     wasteNeeds: "",
   });
@@ -26,13 +29,36 @@ export default function SignUpIndustri() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const saveUserDataToFirestore = async (uid: string, data: any) => {
-    const userRef = doc(db, "industri", uid);
-    await setDoc(userRef, data);
+  const handleLocationChange = (location: { businessAddress: string; lat: number; lng: number }) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      businessAddress: location.businessAddress,
+      lat: location.lat,
+      lng: location.lng,
+    }));
   };
+
+  const saveUserDataToFirestore = async (uid: string, data: any) => {
+    try {
+      const userRef = doc(db, "industri", uid);
+      await setDoc(userRef, data);
+      console.log("User data saved to Firestore successfully:", data);
+    } catch (error) {
+      console.error("Error saving user data to Firestore:", error);
+      throw new Error("Failed to save user data.");
+    }
+  };
+  
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    // Validasi lat dan lng
+    if (formData.lat === null || formData.lng === null) {
+      setError("Location must be specified.");
+      return;
+    }
+  
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -40,7 +66,7 @@ export default function SignUpIndustri() {
         formData.password
       );
       const user = userCredential.user;
-
+  
       // Save user data to Firestore with 'role: industry'
       await saveUserDataToFirestore(user.uid, {
         ...formData,
@@ -48,46 +74,50 @@ export default function SignUpIndustri() {
         role: "industri", // Adding the industry role
         createdAt: new Date().toISOString(),
       });
-
+  
       setSuccess(true);
-      setError("");
-
+      setError(""); // Clear any previous error
+      console.log("User created and data saved:", formData);
+  
       // Redirect to industry page
-      router.push("/industri"); // Replace with the actual industry page URL
+      router.push("/industri");
     } catch (err) {
+      console.error("Error during sign-up:", err);
       setError("Registration failed. Please check your details.");
     }
-  };
+  };    
 
   const handleGoogleSignUp = async () => {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-
+  
       // Save user data to Firestore with 'role: industry'
       await saveUserDataToFirestore(user.uid, {
         email: user.email,
         displayName: user.displayName,
         phoneNumber: user.phoneNumber || "",
+        businessAddress: "Address not provided",
+        lat: null,
+        lng: null,
         provider: "google",
         role: "industri", // Adding the industry role
         uid: user.uid,
         createdAt: new Date().toISOString(),
       });
-
+  
       setSuccess(true);
-      setError("");
-
-      // Redirect to industry page
-      router.push("/industri"); // Replace with the actual industry page URL
+      setError(""); // Clear any previous error
+      router.push("/industri");
     } catch (err) {
+      console.error("Failed to sign up with Google:", err);
       setError("Failed to sign up with Google.");
     }
-  };
+  };  
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#F2E8D8]">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#F2E8D8] py-10">
       <h1 className="text-4xl font-bold text-[#0A4635] mb-8">Industry Registration</h1>
       <form
         onSubmit={handleSignUp}
@@ -149,19 +179,13 @@ export default function SignUpIndustri() {
           />
         </div>
 
-        {/* Business Address */}
+        {/* Business Address Location Form Component */}
         <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">Business Address</label>
-          <input
-            type="text"
-            name="businessAddress"
-            value={formData.businessAddress}
-            onChange={handleChange}
-            placeholder="Enter your business address"
-            required
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#0A4635]"
-          />
+        <label className="block text-gray-700 font-medium mb-2"></label>
+          <LocationForm onLocationChange={handleLocationChange} />
+          <div className="text-xs text-gray-400 underline mt-1/2">*please direct the pin map to fill the address</div>
         </div>
+        
 
         {/* Password */}
         <div className="mb-4">
@@ -218,14 +242,10 @@ export default function SignUpIndustri() {
         </button>
       </form>
 
-      {/* Link to Sign In */}
-      <div className="mt-6">
-        <p>Already have an account?</p>
-        <Link
-          href="/signin"
-          className="text-blue-500 underline hover:text-blue-700"
-        >
-          Log in here
+      <div className="mt-4 text-sm text-[#0A4635]">
+        Already have an account?{" "}
+        <Link href="/login" className="font-medium text-[#0A4635] underline hover:font-semibold">
+          Signin here
         </Link>
       </div>
     </div>

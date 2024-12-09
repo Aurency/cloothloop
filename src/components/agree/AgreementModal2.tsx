@@ -11,8 +11,8 @@ interface AgreementModalProps {
     wasteImage: File | null;
     weight: number;
   }) => void;
-  umkmId: string; // ID UMKM yang akan menerima donasi
-  industryId: string; // ID industri yang melakukan donasi
+  umkmId: string;
+  industryId: string;
 }
 
 const AgreementModal2 = ({
@@ -25,16 +25,14 @@ const AgreementModal2 = ({
   const [isChecked, setIsChecked] = useState(false);
   const [subCategory, setSubCategory] = useState<string>("");
   const [wasteImage, setWasteImage] = useState<File | null>(null);
-  const [weight, setWeight] = useState<number | "">("");
+  const [weight, setWeight] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateForm = () => {
-    if (!wasteImage || !subCategory || !isChecked || !weight) {
-      alert("Please complete all the requirements and agree to the terms.");
-      return false;
-    }
-    if (typeof weight === "number" && weight <= 0) {
-      alert("Weight must be greater than zero.");
+    if (!wasteImage || !subCategory || !isChecked || weight <= 0) {
+      alert(
+        "Please complete all the requirements and ensure valid donation weight."
+      );
       return false;
     }
     return true;
@@ -57,12 +55,28 @@ const AgreementModal2 = ({
     }
   };
 
+  const handleWeightChange = (value: string) => {
+    // Remove non-numeric characters except decimal point
+    const cleanedValue = value.replace(/[^\d.]/g, "");
+
+    // Parse the cleaned value
+    const numericValue = parseFloat(cleanedValue);
+
+    // Set weight if it's a valid positive number
+    if (!isNaN(numericValue) && numericValue >= 0) {
+      setWeight(numericValue);
+    } else if (cleanedValue === "") {
+      setWeight(0);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
 
     try {
+      // Upload image to Firebase Storage
       const storageRef = ref(
         storage,
         `donations/${industryId}/${wasteImage!.name}`
@@ -70,20 +84,22 @@ const AgreementModal2 = ({
       const snapshot = await uploadBytes(storageRef, wasteImage!);
       const imageUrl = await getDownloadURL(snapshot.ref);
 
+      // Simpan data ke Firestore
       const donationsRef = collection(db, "donations");
       await addDoc(donationsRef, {
         umkmId,
         industryId,
         subCategory,
-        weight,
+        weight, // Simpan berat donasi
         wasteImage: imageUrl,
         createdAt: new Date().toISOString(),
       });
 
+      // Panggil onAccept dengan data file asli
       onAccept({
+        weight,
         subCategory,
         wasteImage,
-        weight: weight as number,
       });
 
       alert("Donation successfully submitted!");
@@ -103,13 +119,12 @@ const AgreementModal2 = ({
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
         <h2 className="text-xl font-bold mb-4">Agreement</h2>
         <p className="mb-4 text-sm text-gray-600">
-          By proceeding, you agree to the following terms:
+          Dengan melanjutkan, Anda setuju dengan syarat dan ketentuan berikut:
           <br />
-          - You are responsible for the submission.
-          <br />- All provided information must be accurate.
+          - Anda bertanggung jawab atas pengajuan yang diajukan.
+          <br />- Informasi yang diberikan harus sesuai fakta.
         </p>
 
-        {/* Dropdown Sub-Category */}
         <div className="mb-4">
           <label
             htmlFor="subCategory"
@@ -124,7 +139,7 @@ const AgreementModal2 = ({
             onChange={(e) => setSubCategory(e.target.value)}
           >
             <option value="" disabled>
-              Choose Sub-Category
+              Pilih Sub-Kategori
             </option>
             <option value="Utuh">Utuh</option>
             <option value="Cacat">Cacat</option>
@@ -132,7 +147,6 @@ const AgreementModal2 = ({
           </select>
         </div>
 
-        {/* File Upload */}
         <div className="mb-4">
           <label
             htmlFor="wasteImage"
@@ -149,28 +163,25 @@ const AgreementModal2 = ({
           />
         </div>
 
-        {/* Input Weight */}
         <div className="mb-4">
           <label
             htmlFor="weight"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Weight (kg)
+            Donation Weight (Kg)
           </label>
           <input
             id="weight"
             type="number"
-            min="0.1"
-            step="0.1"
-            value={weight}
-            onChange={(e) =>
-              setWeight(e.target.value ? parseFloat(e.target.value) : "")
-            }
+            step="0.01"
+            min="0"
+            placeholder="Enter weight in Kg"
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            value={weight}
+            onChange={(e) => handleWeightChange(e.target.value)}
           />
         </div>
 
-        {/* Checkbox Agreement */}
         <div className="flex items-center mb-4">
           <input
             type="checkbox"
@@ -178,19 +189,12 @@ const AgreementModal2 = ({
             className="mr-2"
             checked={isChecked}
             onChange={(e) => setIsChecked(e.target.checked)}
-            disabled={!subCategory || !wasteImage || !weight}
           />
-          <label
-            htmlFor="agreement"
-            className={`text-sm ${
-              !subCategory || !wasteImage || !weight ? "text-gray-400" : ""
-            }`}
-          >
-            I agree to the terms and conditions
+          <label htmlFor="agreement" className="text-sm">
+            Saya setuju dengan syarat dan ketentuan
           </label>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex justify-end">
           <button
             onClick={onClose}
@@ -205,11 +209,15 @@ const AgreementModal2 = ({
               !isChecked ||
               !subCategory ||
               !wasteImage ||
-              !weight ||
+              weight <= 0 ||
               isSubmitting
             }
             className={`px-4 py-2 rounded-md ${
-              isChecked && subCategory && wasteImage && weight && !isSubmitting
+              isChecked &&
+              subCategory &&
+              wasteImage &&
+              weight > 0 &&
+              !isSubmitting
                 ? "bg-green-600 text-white hover:bg-green-700"
                 : "bg-gray-300 text-gray-600 cursor-not-allowed"
             }`}
