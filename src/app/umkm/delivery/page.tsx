@@ -23,6 +23,7 @@ export default function DeliveryPage() {
     industryName: string;
     wasteCategory: string;
     subCategory: string;
+    weight: number;
     wasteImage: string;
   }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,6 +77,7 @@ export default function DeliveryPage() {
             industryName: data.industryName || "",
             wasteCategory: data.wasteCategory || "",
             subCategory: data.subCategory || "",
+            weight: data.weight || 0,
             wasteImage: data.wasteImage || "",
           };
         });
@@ -96,7 +98,8 @@ export default function DeliveryPage() {
 
   // Filter data untuk tab Delivery
   const filteredSubmissions = submissions.filter(
-    (submission) => submission.status === "Accepted" && !submission.trackingStatus.orderReceived
+    (submission) =>
+      submission.status === "Accepted" && !submission.trackingStatus.orderReceived
   );
 
   // Redirect ke History jika semua kartu selesai
@@ -270,6 +273,9 @@ export default function DeliveryPage() {
                     </p>
                     <p className="text-sm mb-2">
                       <strong>Sub Category:</strong> {donation.subCategory}
+                    </p>
+                    <p className="text-sm mb-2">
+                      <strong>Weight:</strong> {donation.weight} kg
                     </p>
                     {donation.wasteImage && (
                       <img

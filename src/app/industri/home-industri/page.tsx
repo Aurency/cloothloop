@@ -10,7 +10,8 @@ import {
   getDoc,
   addDoc,
 } from "firebase/firestore";
-import { auth, db } from "@/lib/firebaseconfig";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth, db, storage } from "@/lib/firebaseconfig";
 import { useRouter } from "next/navigation";
 import AgreementModal2 from "@/components/agree/AgreementModal2";
 
@@ -28,6 +29,15 @@ export default function HomeIndustri() {
   const [isDonationSuccessful, setIsDonationSuccessful] = useState(false);
   const router = useRouter();
 
+  // Fungsi untuk mengunggah gambar ke Firebase Storage
+  const uploadImageToStorage = async (file: File): Promise<string> => {
+    const storageRef = ref(storage, `donations/${file.name}`);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+  };
+
+  // Fetch UMKM berdasarkan kategori industri
   const fetchUmkms = async (category: string) => {
     try {
       const umkmsQuery = query(
@@ -46,6 +56,7 @@ export default function HomeIndustri() {
     }
   };
 
+  // Fetch data industri (kategori, nama, dan alamat)
   useEffect(() => {
     const fetchIndustryCategoryAndName = async () => {
       try {
@@ -74,77 +85,90 @@ export default function HomeIndustri() {
     fetchIndustryCategoryAndName();
   }, [router]);
 
+  // Fetch UMKM ketika kategori industri diperbarui
   useEffect(() => {
     if (industryCategory) {
       fetchUmkms(industryCategory);
     }
   }, [industryCategory]);
 
-  const handleDonationClick = async (umkmId: string) => {
+  // Saat tombol donasi ditekan, pilih UMKM dan buka modal
+  const handleDonationClick = (umkmId: string) => {
     setSelectedUmkmId(umkmId);
-    setIsModalOpen(true);
+    setTimeout(() => setIsModalOpen(true), 0); // Pastikan state sudah diperbarui sebelum membuka modal
   };
 
- const handleAcceptAgreement2 = async (data: { subCategory: string; wasteImage: File | null }) => {
-  try {
-    const user = auth.currentUser;
-    if (!user) {
-      console.error("User not authenticated");
-      return;
+  // Fungsi untuk menyimpan donasi ke Firestore
+  const handleAcceptAgreement2 = async (data: { subCategory: string; wasteImage: File | null; weight: number }) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        console.error("User not authenticated");
+        return;
+      }
+
+      if (!selectedUmkmId) {
+        console.error("UMKM ID not selected");
+        return;
+      }
+
+      // Fetch data UMKM
+      const umkmRef = doc(db, "umkm", selectedUmkmId);
+      const umkmDoc = await getDoc(umkmRef);
+      if (!umkmDoc.exists()) {
+        console.error("UMKM not found");
+        return;
+      }
+
+      // Fetch data industri
+      const industryRef = doc(db, "industri", user.uid);
+      const industryDoc = await getDoc(industryRef);
+      if (!industryDoc.exists()) {
+        console.error("Industry not found");
+        return;
+      }
+
+      const umkmData = umkmDoc.data();
+      const industryData = industryDoc.data();
+
+      // Upload gambar ke Firebase Storage jika ada
+      let wasteImageUrl = "No image provided";
+      if (data.wasteImage) {
+        wasteImageUrl = await uploadImageToStorage(data.wasteImage);
+      }
+
+      // Siapkan data donasi
+      const donationData = {
+        industryId: user.uid,
+        industryName: industryData?.companyName || "Unknown",
+        businessAddress: industryData?.businessAddress || "Unknown",
+        wasteCategory: industryData?.wasteNeeds || "Unknown",
+        umkmId: selectedUmkmId,
+        umkmName: umkmData?.businessName || "Unknown",
+        wasteNeeds: umkmData?.wasteNeeds || "Unknown",
+        umkmAddress: umkmData?.businessAddress || "Unknown",
+        subCategory: data.subCategory,
+        wasteImage: wasteImageUrl,
+        weight: data.weight || 0,
+        createdAt: new Date(),
+        status: "Donation Confirmed",
+      };
+
+      // Simpan data ke koleksi donations
+      await addDoc(collection(db, "donations"), donationData);
+
+      // Tutup modal dan tampilkan pesan sukses
+      setIsModalOpen(false);
+      setIsDonationSuccessful(true);
+
+      // Sembunyikan pesan sukses setelah 3 detik
+      setTimeout(() => {
+        setIsDonationSuccessful(false);
+      }, 3000);
+    } catch (err) {
+      console.error("Error submitting donation:", err);
     }
-
-    // Ambil data UMKM berdasarkan selectedUmkmId
-    const umkmRef = doc(db, "umkm", selectedUmkmId!);
-    const umkmDoc = await getDoc(umkmRef);
-
-    if (!umkmDoc.exists()) {
-      console.error("UMKM not found");
-      return;
-    }
-
-    // Ambil data industri berdasarkan user.uid
-    const industryRef = doc(db, "industri", user.uid);
-    const industryDoc = await getDoc(industryRef);
-
-    if (!industryDoc.exists()) {
-      console.error("Industry not found");
-      return;
-    }
-
-    // Data UMKM dan industri
-    const umkmData = umkmDoc.data();
-    const industryData = industryDoc.data();
-
-    // Siapkan data donasi
-    const donationData = {
-      industryId: user.uid, // ID industri (user saat ini)
-      umkmId: selectedUmkmId!, // ID UMKM yang dipilih
-      umkmName: umkmData?.businessName || "Unknown", // Nama UMKM
-      wasteNeeds: umkmData?.wasteNeeds || "Unknown", // Kategori limbah dari UMKM
-      umkmAddress: umkmData?.businessAddress || "Unknown", // Kategori limbah dari UMKM
-      industryName: industryData?.companyName || "Unknown", // Nama perusahaan industri
-      wasteCategory: industryData?.wasteNeeds || "Unknown", // Kategori limbah dari industri
-      businessAddress: industryData?.businessAddress || "Unknown", // Alamat bisnis industri
-      subCategory: data.subCategory, // Sub-kategori dari modal
-      wasteImage: data.wasteImage ? `https://firebasestorage.googleapis.com/donations/${data.wasteImage.name}` : "No image provided",
-      createdAt: new Date(), // Tanggal pembuatan
-    };
-
-    // Simpan data ke koleksi donations
-    await addDoc(collection(db, "donations"), donationData);
-
-    // Tutup modal dan tampilkan pesan sukses
-    setIsModalOpen(false);
-    setIsDonationSuccessful(true);
-
-    // Sembunyikan pesan sukses setelah 3 detik
-    setTimeout(() => {
-      setIsDonationSuccessful(false);
-    }, 3000);
-  } catch (err) {
-    console.error("Error submitting donation:", err);
-  }
-};
+  };
 
   return (
     <div>
