@@ -28,6 +28,18 @@ export default function DeliveryPage2() {
     };
   }[]>([]);
 
+  const [donations, setDonations] = useState<{
+    id: string;
+    industryName: string;
+    wasteCategory: string;
+    status: string;
+    trackingStatus: {
+      wastePickUp: boolean;
+      sentToYou: boolean;
+      orderReceived: boolean;
+    };
+  }[]>([]);
+  
   const [industryId, setIndustryId] = useState<string | null>(null);
 
   // Mendapatkan industryId dari Firestore berdasarkan UID pengguna yang sedang login
@@ -179,101 +191,104 @@ export default function DeliveryPage2() {
         case "delivery":
           return (
             <div>
-              {/* Filter untuk submission yang statusnya 'Accepted' */}
+              {/* Pending Deliveries for Submissions */}
               {submissions.filter((submission) => submission.status === "Accepted").length > 0 ? (
                 <div className="flex flex-col space-y-5 mt-5">
-                  {submissions
-                    .filter(
-                      (submission) =>
-                        submission.status === "Accepted" &&
-                        !submission.trackingStatus.orderReceived // Filter berdasarkan tracking status
-                    )
-                    .map((submission) => (
-                      <div
-                        key={submission.id}
-                        className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600"
-                      >
-                        {/* Informasi UMKM */}
-                        <p className="text-sm mb-2">
-                          <strong>UMKM Name:</strong> {submission.umkmName}
-                        </p>
-                        <p className="text-sm mb-2">
-                          <strong>Category:</strong> {submission.wasteNeeds}
-                        </p>
+                  {submissions.filter(
+                    (submission) => submission.status === "Accepted" && !submission.trackingStatus.orderReceived
+                  ).map((submission) => (
+                    <div key={submission.id} className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600">
+                      <p className="text-sm mb-2"><strong>UMKM Name:</strong> {submission.umkmName}</p>
+                      <p className="text-sm mb-2"><strong>Category:</strong> {submission.wasteNeeds}</p>
         
-                        {/* Progress Tracking */}
-                        <div className="flex flex-col items-center space-y-2 mt-5">
-                          <div className="flex items-center justify-between space-x-14">
-                            {/* Waste Pick Up */}
-                            <div className="flex flex-col items-center">
-                              <FaBox
-                                className={`text-xl ${getTrackingStatusColor(
-                                  submission.trackingStatus.wastePickUp
-                                )}`}
-                              />
-                              <p className="text-sm mt-2">Waste Pick Up</p>
-                            </div>
-        
-                            {/* Waste Shipping */}
-                            <div className="flex flex-col items-center">
-                              <FaTruck
-                                className={`text-xl ${getTrackingStatusColor(
-                                  submission.trackingStatus.sentToYou
-                                )}`}
-                              />
-                              <p className="text-sm mt-2">Waste Shipping</p>
-                            </div>
-        
-                            {/* Waste Received */}
-                            <div className="flex flex-col items-center">
-                              <FaCheckCircle
-                                className={`text-xl ${getTrackingStatusColor(
-                                  submission.trackingStatus.orderReceived
-                                )}`}
-                              />
-                              <p className="text-sm mt-2">Waste Received</p>
-                            </div>
+                      {/* Progress Tracking for Submissions */}
+                      <div className="flex flex-col items-center space-y-2 mt-5">
+                        <div className="flex items-center justify-between space-x-14">
+                          <div className="flex flex-col items-center">
+                            <FaBox className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.wastePickUp)}`} />
+                            <p className="text-sm mt-2">Waste Pick Up</p>
                           </div>
-        
-                          {/* Pesan Selamat */}
-                          {submission.trackingStatus.orderReceived && (
-                            <p className="text-green-500 text-sm font-semibold mt-10">
-                              🎉 Congratulations! Your waste order has been successfully received!
-                            </p>
-                          )}
+                          <div className="flex flex-col items-center">
+                            <FaTruck className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.sentToYou)}`} />
+                            <p className="text-sm mt-2">Waste Shipping</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <FaCheckCircle className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.orderReceived)}`} />
+                            <p className="text-sm mt-2">Waste Received</p>
+                          </div>
                         </div>
                       </div>
-                    ))}
+                    </div>
+                  ))}
                 </div>
               ) : (
-                <p className="text-lg text-gray-500">No accepted deliveries.</p>
+                <p className="text-lg text-gray-500">No accepted deliveries for submissions.</p>
+              )}
+        
+              {/* Pending Deliveries for Donations */}
+              {donations.filter((donation) => donation.status === "Donation Confirmed").length > 0 ? (
+                <div className="flex flex-col space-y-5 mt-5">
+                  {donations.filter(
+                    (donation) => donation.status === "Donation Confirmed" && !donation.trackingStatus.orderReceived
+                  ).map((donation) => (
+                    <div key={donation.id} className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600">
+                      <p className="text-sm mb-2"><strong>Industry Name:</strong> {donation.industryName}</p>
+                      <p className="text-sm mb-2"><strong>Category:</strong> {donation.wasteCategory}</p>
+        
+                      {/* Progress Tracking for Donations */}
+                      <div className="flex flex-col items-center space-y-2 mt-5">
+                        <div className="flex items-center justify-between space-x-14">
+                          <div className="flex flex-col items-center">
+                            <FaBox className={`text-xl ${getTrackingStatusColor(donation.trackingStatus.wastePickUp)}`} />
+                            <p className="text-sm mt-2">Waste Pick Up</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <FaTruck className={`text-xl ${getTrackingStatusColor(donation.trackingStatus.sentToYou)}`} />
+                            <p className="text-sm mt-2">Waste Shipping</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <FaCheckCircle className={`text-xl ${getTrackingStatusColor(donation.trackingStatus.orderReceived)}`} />
+                            <p className="text-sm mt-2">Waste Received</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-lg text-gray-500">No pending deliveries for donations.</p>
               )}
             </div>
           );
         
-      case "history":
-        return (
-          <div className="flex flex-col space-y-5 mt-5">
-            {submissions
-              .filter((submission) => submission.trackingStatus.orderReceived)
-              .map((submission) => (
-                <div
-                  key={submission.id}
-                  className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600"
-                >
-                  <p className="text-sm mb-2">
-                    <strong>UMKM Name:</strong> {submission.umkmName}
-                  </p>
-                  <p className="text-sm mb-2">
-                    <strong>Category:</strong> {submission.wasteNeeds}
-                  </p>
-                  <p className="text-green-500 font-semibold">
-                    ✅ Delivery successfully completed! Congrats, you have successfully sent your waste.
-                  </p>
-                </div>
-              ))}
-          </div>
-        );
+        
+          case "history":
+            return (
+              <div className="flex flex-col space-y-5 mt-5">
+                {/* History for Submissions */}
+                {submissions.filter((submission) => submission.trackingStatus.orderReceived).map((submission) => (
+                  <div key={submission.id} className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600">
+                    <p className="text-sm mb-2"><strong>UMKM Name:</strong> {submission.umkmName}</p>
+                    <p className="text-sm mb-2"><strong>Category:</strong> {submission.wasteNeeds}</p>
+                    <p className="text-green-500 font-semibold">
+                      ✅ Delivery successfully completed! Congrats, you have successfully sent your waste.
+                    </p>
+                  </div>
+                ))}
+          
+                {/* History for Donations */}
+                {donations.filter((donation) => donation.trackingStatus.orderReceived).map((donation) => (
+                  <div key={donation.id} className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600">
+                    <p className="text-sm mb-2"><strong>Industry Name:</strong> {donation.industryName}</p>
+                    <p className="text-sm mb-2"><strong>Category:</strong> {donation.wasteCategory}</p>
+                    <p className="text-green-500 font-semibold">
+                      ✅ Delivery successfully completed! Congrats, you have successfully donated your waste.
+                    </p>
+                  </div>
+                ))}
+              </div>
+            );
+          
 
       default:
         return null;
