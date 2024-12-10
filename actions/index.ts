@@ -54,7 +54,7 @@ export async function chatCompletion(chatMessages: Message[]): Promise<Serializa
       model: 'gpt-3.5-turbo',
       // Tambahkan parameter untuk kontrol kreativitas dan fokus
       temperature: 0.7, // Seimbang antara konsistensi dan kreativitas
-      max_tokens: 150   // Batasi panjang respons
+      max_tokens: 500   // Batasi panjang respons
     });
 
     const serializableResponse: SerializableCompletion = {

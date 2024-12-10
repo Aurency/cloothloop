@@ -8,14 +8,14 @@ import { HiOutlineClock } from "react-icons/hi2";
 import { IoBicycle, IoStorefrontOutline } from "react-icons/io5";
 import { GiFactory } from "react-icons/gi";
 import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebaseconfig"; // Path ke file konfigurasi Firebase Anda
+import { auth } from "@/lib/firebaseconfig";
 
 const navLinks = [
   { name: "Home", href: "/admin", icon: <FiHome size={20} /> },
   { name: "Industry Data", href: "/admin/data-industri", icon: <GiFactory size={20} /> },
   { name: "UMKM Data", href: "/admin/data-umkm", icon: <IoStorefrontOutline size={20} /> },
-  { name: "History", href: "/admin/data-pengiriman", icon: <HiOutlineClock size={20} /> },
-  { name: "Kurir", href: "/admin/data-kurir", icon: <IoBicycle size={20} /> },
+  // { name: "History", href: "/admin/data-pengiriman", icon: <HiOutlineClock size={20} /> },
+  // { name: "Kurir", href: "/admin/data-kurir", icon: <IoBicycle size={20} /> },
 ];
 
 export function Sidebar3() {
@@ -65,7 +65,7 @@ export function Sidebar3() {
       </ul>
 
       {/* Logout Section */}
-      <div className="border-t border-[#f4ede6]/30 mt-[280px]">
+      <div className="border-t border-[#f4ede6]/30 mt-[415px]">
         <div
           onClick={handleLogout} // Logout ketika di-klik
           className="flex items-center text-[#f4ede6] border-[#0A4635] hover:bg-[#E8F5E9]/30 gap-4 px-4 py-5 mt-3 border-l-4 hover:border-[#FFEA7F] hover:text-[#FFEA7F]"

@@ -11,7 +11,7 @@ export default function BotMessage({role, content}: Message){
                 />
             </div>
 
-            <div className='text-xs'>
+            <div className='text-xs h-auto'>
                 <div>{role}</div>
                 <p>{content}</p>
             </div>
