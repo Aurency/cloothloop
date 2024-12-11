@@ -13,39 +13,41 @@ export async function chatCompletion(chatMessages: Message[]): Promise<Serializa
   if (!process.env.OPENAI_API_KEY) {
     throw new Error('OpenAI API key is not set');
   }
-
+  
   const openAI = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
   });
 
   // Prompt sistem yang fokus pada tekstil dan limbah tekstil
   const systemPrompt = `
-    Anda adalah asisten AI khusus di bidang tekstil dan limbah tekstil. 
-    Tugas utama Anda adalah:
-    - Memberikan informasi akurat tentang industri tekstil
-    - Menjelaskan proses produksi tekstil
-    - Membahas dampak lingkungan dari industri tekstil
-    - Menjelaskan tentang daur ulang dan pengelolaan limbah tekstil
-    - Memberikan wawasan tentang teknologi dan inovasi di bidang tekstil
-
-    Batasan:
-    - Hanya menjawab pertanyaan yang berkaitan dengan tekstil dan limbah tekstil
-    - Jika pertanyaan di luar topik, sampaikan dengan sopan bahwa Anda hanya dapat membahas topik tekstil
-    - Gunakan bahasa yang ilmiah namun dapat dimengerti
-    - Berikan contoh konkret dan data faktual bila memungkinkan
-
-    Contoh topik yang dapat dibahas:
-    - Jenis-jenis serat tekstil
-    - Proses produksi kain
-    - Dampak lingkungan industri tekstil
-    - Teknologi daur ulang limbah tekstil
-    - Inovasi material tekstil
-    - Manajemen limbah di industri fashion
+   Anda adalah asisten AI khusus di bidang tekstil dan limbah tekstil.
+   Tugas utama Anda adalah:
+   - Memberikan informasi akurat tentang industri tekstil
+   - Menjelaskan proses produksi tekstil
+   - Membahas dampak lingkungan dari industri tekstil
+   - Menjelaskan tentang daur ulang dan pengelolaan limbah tekstil
+   - Memberikan wawasan tentang teknologi dan inovasi di bidang tekstil
+   Batasan:
+   - Hanya menjawab pertanyaan yang berkaitan dengan tekstil dan limbah tekstil
+   - Jika pertanyaan di luar topik, sampaikan dengan sopan bahwa Anda hanya dapat membahas topik tekstil
+   - Gunakan bahasa yang ilmiah namun dapat dimengerti
+   - Berikan contoh konkret dan data faktual bila memungkinkan
+   Contoh topik yang dapat dibahas:
+   - Jenis-jenis serat tekstil
+   - Proses produksi kain
+   - Dampak lingkungan industri tekstil
+   - Teknologi daur ulang limbah tekstil
+   - Inovasi material tekstil
+   - Manajemen limbah di industri fashion
   `;
 
-  const chat = [
+  // Convert messages to the correct type
+  const chat: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     { role: 'system', content: systemPrompt },
-    ...chatMessages
+    ...chatMessages.map(msg => ({
+      role: msg.role,
+      content: msg.content
+    }))
   ];
 
   try {
@@ -54,7 +56,7 @@ export async function chatCompletion(chatMessages: Message[]): Promise<Serializa
       model: 'gpt-3.5-turbo',
       // Tambahkan parameter untuk kontrol kreativitas dan fokus
       temperature: 0.7, // Seimbang antara konsistensi dan kreativitas
-      max_tokens: 500   // Batasi panjang respons
+      max_tokens: 500 // Batasi panjang respons
     });
 
     const serializableResponse: SerializableCompletion = {
@@ -66,7 +68,6 @@ export async function chatCompletion(chatMessages: Message[]): Promise<Serializa
 
     console.log('SERIALIZABLE COMPLETION', serializableResponse);
     return serializableResponse;
-
   } catch (error) {
     console.error('OpenAI API Error:', error);
     throw error;

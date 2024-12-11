@@ -1,7 +1,7 @@
 import { Hero } from "../../../components/landing-com/Hero"
 import Link from "next/link";
 
-export function Landingpage() {
+export default function Landingpage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
