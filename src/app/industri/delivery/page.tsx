@@ -96,6 +96,39 @@ export default function DeliveryPage2() {
     return () => unsubscribe();
   }, [industryId]);
 
+
+  useEffect(() => {
+    if (!industryId) return;
+  
+    const donationsQuery = query(
+      collection(db, "donations"),
+      where("industryId", "==", industryId)
+    );
+  
+    const unsubscribe = onSnapshot(donationsQuery, (snapshot) => {
+      const fetchedDonations = snapshot.docs.map((doc) => {
+        const donationData = doc.data();
+        console.log("Donation Data:", donationData); // Debug log
+        return {
+          id: doc.id,
+          industryName: donationData.industryName || "Unknown",
+          wasteCategory: donationData.wasteCategory || "Unknown",
+          status: donationData.status || "Pending",
+          trackingStatus: donationData.trackingStatus || {
+            wastePickUp: false,
+            sentToYou: false,
+            orderReceived: false,
+          },
+        };
+      });
+  
+      setDonations(fetchedDonations);
+    });
+  
+    return () => unsubscribe();
+  }, [industryId]);
+  
+
   // Mengubah status submission
   const handleStatusChange = async (submissionId: string, status: "Accepted" | "Rejected") => {
     try {
@@ -189,77 +222,94 @@ export default function DeliveryPage2() {
           </div>
         );
         case "delivery":
-          return (
-            <div>
-              {/* Pending Deliveries for Submissions */}
-              {submissions.filter((submission) => submission.status === "Accepted").length > 0 ? (
-                <div className="flex flex-col space-y-5 mt-5">
-                  {submissions.filter(
-                    (submission) => submission.status === "Accepted" && !submission.trackingStatus.orderReceived
-                  ).map((submission) => (
-                    <div key={submission.id} className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600">
-                      <p className="text-sm mb-2"><strong>UMKM Name:</strong> {submission.umkmName}</p>
-                      <p className="text-sm mb-2"><strong>Category:</strong> {submission.wasteNeeds}</p>
-        
-                      {/* Progress Tracking for Submissions */}
-                      <div className="flex flex-col items-center space-y-2 mt-5">
-                        <div className="flex items-center justify-between space-x-14">
-                          <div className="flex flex-col items-center">
-                            <FaBox className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.wastePickUp)}`} />
-                            <p className="text-sm mt-2">Waste Pick Up</p>
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <FaTruck className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.sentToYou)}`} />
-                            <p className="text-sm mt-2">Waste Shipping</p>
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <FaCheckCircle className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.orderReceived)}`} />
-                            <p className="text-sm mt-2">Waste Received</p>
-                          </div>
-                        </div>
-                      </div>
+  return (
+    <div className="mt-5 space-y-8">
+      {/* Submission Delivery */}
+      <div>
+        <h2 className="text-lg font-semibold mb-4">Submission Delivery</h2>
+        {submissions.filter((submission) => submission.status === "Accepted").length > 0 ? (
+          <div className="space-y-5">
+            {submissions
+              .filter((submission) => submission.status === "Accepted")
+              .map((submission) => (
+                <div
+                  key={submission.id}
+                  className="p-4 border border-[#0A4635]/30 rounded-lg text-gray-600"
+                >
+                  <p><strong>UMKM Name:</strong> {submission.umkmName}</p>
+                  <p><strong>Category:</strong> {submission.wasteNeeds}</p>
+                  <div className="flex justify-around mt-4">
+                    <div className="flex flex-col items-center">
+                      <FaBox
+                        className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.wastePickUp)}`}
+                      />
+                      <p className="text-sm mt-1">Waste Pick Up</p>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-lg text-gray-500">No accepted deliveries for submissions.</p>
-              )}
-        
-              {/* Pending Deliveries for Donations */}
-              {donations.filter((donation) => donation.status === "Donation Confirmed").length > 0 ? (
-                <div className="flex flex-col space-y-5 mt-5">
-                  {donations.filter(
-                    (donation) => donation.status === "Donation Confirmed" && !donation.trackingStatus.orderReceived
-                  ).map((donation) => (
-                    <div key={donation.id} className="p-4 border-[1px] border-[#0A4635]/30 rounded-lg min-h-[100px] text-gray-600">
-                      <p className="text-sm mb-2"><strong>Industry Name:</strong> {donation.industryName}</p>
-                      <p className="text-sm mb-2"><strong>Category:</strong> {donation.wasteCategory}</p>
-        
-                      {/* Progress Tracking for Donations */}
-                      <div className="flex flex-col items-center space-y-2 mt-5">
-                        <div className="flex items-center justify-between space-x-14">
-                          <div className="flex flex-col items-center">
-                            <FaBox className={`text-xl ${getTrackingStatusColor(donation.trackingStatus.wastePickUp)}`} />
-                            <p className="text-sm mt-2">Waste Pick Up</p>
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <FaTruck className={`text-xl ${getTrackingStatusColor(donation.trackingStatus.sentToYou)}`} />
-                            <p className="text-sm mt-2">Waste Shipping</p>
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <FaCheckCircle className={`text-xl ${getTrackingStatusColor(donation.trackingStatus.orderReceived)}`} />
-                            <p className="text-sm mt-2">Waste Received</p>
-                          </div>
-                        </div>
-                      </div>
+                    <div className="flex flex-col items-center">
+                      <FaTruck
+                        className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.sentToYou)}`}
+                      />
+                      <p className="text-sm mt-1">Waste Shipping</p>
                     </div>
-                  ))}
+                    <div className="flex flex-col items-center">
+                      <FaCheckCircle
+                        className={`text-xl ${getTrackingStatusColor(submission.trackingStatus.orderReceived)}`}
+                      />
+                      <p className="text-sm mt-1">Waste Received</p>
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <p className="text-lg text-gray-500">No pending deliveries for donations.</p>
-              )}
-            </div>
-          );
+              ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">No submission deliveries available.</p>
+        )}
+      </div>
+
+      {/* Donation Delivery */}
+      <div>
+        <h2 className="text-lg font-semibold mb-4">Donation Delivery</h2>
+        {donations.filter((donation) => donation.status === "Donation Confirmed").length > 0 ? (
+          <div className="space-y-5">
+            {donations
+              .filter((donation) => donation.status === "Donation Confirmed")
+              .map((donation) => (
+                <div
+                  key={donation.id}
+                  className="p-4 border border-[#0A4635]/30 rounded-lg text-gray-600"
+                >
+                  <p><strong>Industry Name:</strong> {donation.industryName}</p>
+                  <p><strong>Category:</strong> {donation.wasteCategory}</p>
+                  <div className="flex justify-around mt-4">
+                    <div className="flex flex-col items-center">
+                      <FaBox
+                        className={`text-xl ${getTrackingStatusColor(donation.trackingStatus.wastePickUp)}`}
+                      />
+                      <p className="text-sm mt-1">Waste Pick Up</p>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <FaTruck
+                        className={`text-xl ${getTrackingStatusColor(donation.trackingStatus.sentToYou)}`}
+                      />
+                      <p className="text-sm mt-1">Waste Shipping</p>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <FaCheckCircle
+                        className={`text-xl ${getTrackingStatusColor(donation.trackingStatus.orderReceived)}`}
+                      />
+                      <p className="text-sm mt-1">Waste Received</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">No donation deliveries available.</p>
+        )}
+      </div>
+    </div>
+  );
+
         
         
           case "history":
@@ -297,19 +347,34 @@ export default function DeliveryPage2() {
 
   return (
     <div className="min-h-screen flex flex-col justify-start space-y-3">
-      <h1 className="text-xl font-semibold mb-2 text-[#0A4635] text-left">Activity</h1>
-      <div className="relative flex space-x-4 border-b border-[#0A4635]/30 mb-5">
+      <h1 className="text-xl font-semibold mb-2 text-[#0A4635] text-left">
+        Activity
+      </h1>
+
+      <div className="relative flex space-x-4 border-b border-[#0A4635]/30">
         {["submission", "delivery", "history"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`py-2 px-4 ${activeTab === tab ? "font-bold text-[#0A4635]" : "text-gray-600"}`}
+            className={`py-2 px-4 relative ${
+              activeTab === tab
+                ? "font-bold text-[#0A4635]"
+                : "font-medium text-gray-600"
+            } hover:text-[#0A4635] transition-all duration-300 ease-in-out`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            <span
+              className={`absolute left-0 bottom-0 w-full h-[2px] ${
+                activeTab === tab
+                  ? "bg-[#0A4635] scale-x-100"
+                  : "bg-transparent scale-x-0"
+              } transform transition-all duration-300 ease-in-out`}
+            />
           </button>
         ))}
       </div>
-      <div className="mt-5">{renderContent()}</div>
+
+      <div className="mt-4">{renderContent()}</div>
     </div>
   );
 }
