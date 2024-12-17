@@ -10,12 +10,12 @@ export const Hero: React.FC = () => {
     >
       <div className="flex p-6 items-end h-full">
         <div className="flex-row justify-start text-[#F2E8D8] md:text-6xl font-semibold pb-3">
-          <p>Apa bagus intinya?</p>
-          <p>Kayak intro ala-ala!</p>
+          <p>Transform Waste into Wonder.</p>
+          <p>Welcome to ClothLoop!</p>
           <div>
             <Link href="/login">
               <button className="px-10 py-2 mt-6 text-lg font-medium text-[#0A4635] bg-[#FFEA7F] hover:bg-[#fcde49] rounded-[24px]">
-                Gabung
+                Join
               </button>
             </Link>
           </div>

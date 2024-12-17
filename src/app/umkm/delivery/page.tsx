@@ -416,7 +416,7 @@ export default function DeliveryPage() {
                       <img
                         src={donation.wasteImage}
                         alt="Waste"
-                        className="w-full h-32 object-cover rounded-md"
+                        className="max-w-[500px] max-h-[500px] object-cover rounded-md"
                       />
                     )}
                   </div>

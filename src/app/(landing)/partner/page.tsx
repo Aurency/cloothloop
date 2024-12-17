@@ -12,7 +12,7 @@ export default  function Partner() {
             Bergabunglah untuk mendapatkan manfaat dari kolaborasi ini!
           </p>
           <Link href="/auth/signup-umkm" className="px-6 py-2 mt-4 text-lg font-medium text-[#0A4635] bg-[#FFEA7F] hover:bg-[#fcde49] rounded-[24px]">
-            Gabung
+            Join
           </Link>
         </div>
 
@@ -24,7 +24,7 @@ export default  function Partner() {
             skala besar. Bergabunglah untuk berpartisipasi dalam solusi ramah lingkungan.
           </p>
           <Link href="/auth/signup-industri" className="px-6 py-2 mt-4 text-lg font-medium text-[#0A4635] bg-[#FFEA7F] hover:bg-[#fcde49] rounded-[24px]"> 
-            Gabung
+            Join
           </Link>
         </div>
       </div>

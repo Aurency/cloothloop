@@ -280,9 +280,6 @@ export default function CourierPage() {
       <div className="flex flex-col space-y-8">
         {/* On Going Tracking */}
         <div>
-          <h2 className="text-lg font-semibold text-[#0A4635]">
-            Submissions Tracking
-          </h2>
           {activeTab === "onGoing" && (
             <>
               {submissions.filter(
@@ -315,9 +312,6 @@ export default function CourierPage() {
 
         {/* Completed Tracking */}
         <div>
-          <h2 className="text-lg font-semibold text-[#0A4635]">
-            Completed Tracking
-          </h2>
           {activeTab === "completed" && (
             <>
               {submissions.filter(
