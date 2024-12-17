@@ -52,7 +52,7 @@ export default function Landingpage() {
 
         <div className="bg-[#F2E8D8] container mx-auto mb-8 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div className="bg-[#F2E8D8] w-[487px] h-auto mx-auto mb-4">
-            <img src="/assets/Pra-konsumsi.png" alt="What we do" className="shadow-lg mx-50" />
+            <img src="/assets/pra-konsumsi.png" alt="What we do" className="shadow-lg mx-50" />
           </div>
           <div>
             <h2 className="text-4xl font-semibold text-green-900 mb-4">Pra-konsumsi</h2>
