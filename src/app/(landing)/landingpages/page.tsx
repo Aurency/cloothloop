@@ -14,7 +14,7 @@ export default function Landingpage() {
         <div className="container mx-auto px-6 md:px-12 text-center">
           <h2 className="text-4xl font-semibold mb-4 text-green-900">WHO we are</h2>
           <p className="text-gray-600">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum rem quisquam velit praesentium magni doloribus adipisci voluptatibus, error obcaecati quis reiciendis assumenda, modi animi necessitatibus vel nobis sunt fugiat deleniti?. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quisquam est voluptate porro, voluptatibus praesentium illum accusamus adipisci minima blanditiis at impedit, dignissimos autem itaque. Totam tempora quia vero voluptatem libero?
+          Berawal dari kepedulian terhadap lingkungan dan komitmen untuk mengurangi jejak karbon, kami berfokus pada transformasi limbah tekstil menjadi sesuatu yang bernilai. Dengan teknologi modern dan pendekatan ramah pengguna, ClothLoop memudahkan siapa saja untuk berkontribusi dalam gerakan daur ulang.
           </p>
         </div>
       </section>
@@ -25,7 +25,7 @@ export default function Landingpage() {
           <div>
             <h2 className="text-4xl font-semibold text-green-900 mb-4">What we do</h2>
             <p className="text-gray-600">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum, assumenda voluptate omnis ut accusamus adipisci, eius incidunt, modi facere accusantium ipsam sequi ullam hic officiis id perspiciatis necessitatibus laudantium nulla. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sequi similique consequatur necessitatibus porro iure tenetur asperiores molestiae magnam ab rem provident optio, unde quos tempore vel assumenda soluta suscipit blanditiis. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aut nesciunt ad, fugiat accusantium impedit dolor velit. Sunt possimus voluptatem aliquam totam voluptatum sint illo nobis itaque velit assumenda, quam tenetur?
+            ClothLoop hadir sebagai solusi yang menghubungkan industri dan UMKM dalam ekosistem daur ulang tekstil yang berkelanjutan. Kami menjembatani industri yang menghasilkan limbah tekstil dalam skala besar dengan UMKM kreatif yang memiliki kemampuan untuk mengolah dan mengubahnya menjadi produk bernilai tambah. Dengan pendekatan kolaboratif ini, ClothLoop memastikan bahwa limbah tekstil tidak lagi berakhir di tempat pembuangan, melainkan mendapatkan kehidupan baru sebagai produk inovatif dan ramah lingkungan.
             </p>
           </div>
           <div className="bg-[#F2E8D8]">
@@ -37,9 +37,9 @@ export default function Landingpage() {
       {/* Textile Waste Section */}
       <section className="py-20 bg-[#0A4635]">
         <div className="container mx-auto px-6 md:px-12 text-center">
-          <h2 className="text-4xl font-semibold mb-4 text-[#F2E8D8]">Apa itu limbah textile?</h2>
+          <h2 className="text-4xl font-semibold mb-4 text-[#F2E8D8]">What is textile waste?</h2>
           <p className="text-[#F2E8D8]">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum rem quisquam velit praesentium magni doloribus adipisci voluptatibus, error obcaecati quis reiciendis assumenda, modi animi necessitatibus vel nobis sunt fugiat deleniti?. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quisquam est voluptate porro, voluptatibus praesentium illum accusamus adipisci minima blanditiis at impedit, dignissimos autem itaque. Totam tempora quia vero voluptatem libero?
+          Limbah tekstil merujuk pada bahan atau produk tekstil yang sudah tidak terpakai dan dibuang, baik dari sektor industri maupun konsumsi rumah tangga. Limbah ini bisa berupa sisa-sisa kain, pakaian bekas, atau produk cacat yang tidak lagi memenuhi standar kualitas. Di industri, limbah tekstil biasanya berasal dari proses produksi, seperti sisa pemotongan kain atau bahan yang tidak terpakai. Sementara itu, limbah dari konsumsi adalah pakaian atau barang-barang tekstil rumah tangga yang sudah rusak atau tidak dibutuhkan lagi. Limbah tekstil menjadi masalah lingkungan karena sebagian besar tidak terurai dengan mudah, terutama yang terbuat dari bahan sintetis, yang membutuhkan waktu lama untuk terdegradasi di alam.
           </p>
         </div>
       </section>
@@ -47,7 +47,7 @@ export default function Landingpage() {
       {/* Kategori limbah textile */}
       <section className="bg-[#F2E8D8]">
         <div className="text-center">
-          <h2 className="text-4xl font-semibold text-green-900 mb-2 py-10 bg-[#F2E8D8]/50">Kategori limbah textile</h2>
+          <h2 className="text-4xl font-semibold text-green-900 mb-2 py-10 bg-[#F2E8D8]/50">Textile Waste Category</h2>
         </div>
 
         <div className="bg-[#F2E8D8] container mx-auto mb-8 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -57,7 +57,7 @@ export default function Landingpage() {
           <div>
             <h2 className="text-4xl font-semibold text-green-900 mb-4">Pra-konsumsi</h2>
             <p className="text-gray-600">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum, assumenda voluptate omnis ut accusamus adipisci, eius incidunt, modi facere accusantium ipsam sequi ullam hic officiis id perspiciatis necessitatibus laudantium nulla. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sequi similique consequatur necessitatibus porro iure tenetur asperiores molestiae magnam ab rem provident optio, unde quos tempore vel assumenda soluta suscipit blanditiis. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aut nesciunt ad, fugiat accusantium impedit dolor velit. Sunt possimus voluptatem aliquam totam voluptatum sint illo nobis itaque velit assumenda, quam tenetur?
+            Pra-konsumsi merujuk pada limbah yang dihasilkan selama tahap produksi barang, sebelum barang tersebut sampai ke konsumen akhir. Dalam konteks tekstil, limbah pra-konsumsi adalah sisa-sisa bahan atau produk yang dihasilkan selama proses pembuatan pakaian atau barang tekstil lainnya, namun belum dijual atau digunakan oleh konsumen. Contohnya termasuk sisa pemotongan kain, bahan yang tidak memenuhi standar kualitas, atau produk cacat dari pabrik. Limbah pra-konsumsi ini biasanya terjadi di sepanjang rantai pasokan industri, mulai dari perancangan, pembuatan, hingga distribusi, dan seringkali dapat didaur ulang atau dimanfaatkan kembali dalam proses produksi berikutnya.
             </p>
           </div>
         </div>
@@ -69,7 +69,7 @@ export default function Landingpage() {
           <div>
             <h2 className="text-4xl font-semibold text-green-900 mb-4">Pasca-konsumsi</h2>
             <p className="text-gray-600">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum, assumenda voluptate omnis ut accusamus adipisci, eius incidunt, modi facere accusantium ipsam sequi ullam hic officiis id perspiciatis necessitatibus laudantium nulla. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sequi similique consequatur necessitatibus porro iure tenetur asperiores molestiae magnam ab rem provident optio, unde quos tempore vel assumenda soluta suscipit blanditiis. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aut nesciunt ad, fugiat accusantium impedit dolor velit. Sunt possimus voluptatem aliquam totam voluptatum sint illo nobis itaque velit assumenda, quam tenetur?
+            Pasca-konsumsi merujuk pada limbah yang dihasilkan setelah barang atau produk telah digunakan oleh konsumen. Dalam konteks tekstil, limbah pasca-konsumsi adalah barang-barang tekstil seperti pakaian, seprai, gorden, atau barang rumah tangga lainnya yang sudah tidak digunakan lagi dan dibuang oleh konsumen. Limbah ini bisa berupa pakaian yang sudah rusak, usang, atau tidak lagi sesuai dengan kebutuhan pengguna. Limbah pasca-konsumsi sering menjadi tantangan besar dalam pengelolaan sampah, karena sebagian besar tekstil ini tidak dapat terurai dengan mudah, terutama yang terbuat dari bahan sintetis. Banyak dari limbah ini akhirnya berakhir di tempat pembuangan akhir atau menumpuk di tempat sampah.
             </p>
           </div>
         </div>
